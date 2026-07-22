@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>曽根望夢 | エンジニアポートフォリオ</title>
+    <meta name="description" content="Go・TypeScript・Reactを中心に、Web・モバイルアプリ開発とプロダクトマネジメントに取り組む、神戸電子専門学校ITエキスパート科・曽根望夢のポートフォリオです。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="header hidden-on-hero">
+        <div class="header-content">
+            <div class="logo">
+                <h1>Miyu Sone</h1>
+                <p class="subtitle">ENGINEER PORTFOLIO</p>
+            </div>
+            <nav class="nav">
+                <a href="#profile" class="nav-link">プロフィール</a>
+                <a href="#skills" class="nav-link">スキル</a>
+                <a href="#projects" class="nav-link">プロジェクト</a>
+                <a href="#activity" class="nav-link">活動</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- メインビジュアル -->
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+            <source src="videos/hero-source.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <p class="hero-subtitle">MIYU SONE</p>
+            <h2 class="hero-title">Portfolio</h2>
+            <div class="hero-links">
+                <a href="https://github.com/s0nmy/" target="_blank" rel="noopener noreferrer" class="hero-icon" aria-label="GitHub">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                </a>
+                <a href="https://note.com/snmy_" target="_blank" rel="noopener noreferrer" class="hero-icon" aria-label="note">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                </a>
+                <a href="https://twitter.com/s0nmy_" target="_blank" rel="noopener noreferrer" class="hero-icon" aria-label="X">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>SCROLL</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- プロフィールセクション -->
+    <section id="profile" class="section profile-section">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-en">PROFILE</span>
+                <span class="title-ja">プロフィール</span>
+            </h2>
+            <div class="profile-content">
+                <div class="profile-image">
+                    <div class="image-placeholder">
+                        <span class="placeholder-text">YOUR PHOTO</span>
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-item">
+                        <span class="profile-label">名前</span>
+                        <span class="profile-value">曽根 望夢（そね みゆ）</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">所属</span>
+                        <span class="profile-value">神戸電子専門学校 ITエキスパート科 3年（2028年3月卒業予定）</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">興味分野</span>
+                        <span class="profile-value">Webアプリケーション開発、バックエンド開発、モバイルアプリ開発、UI/UX、プロダクトマネジメント</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">プログラミング歴</span>
+                        <span class="profile-value">約2年（2024年4月〜）</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">自己紹介</span>
+                        <span class="profile-value">Go・TypeScript・Reactを中心にWebアプリケーション開発に取り組んでいます。実装だけでなく、ユーザーに価値を届ける導線やチームの進め方まで設計できるエンジニアを目指しています。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- スキルセクション -->
+    <section id="skills" class="section charm-section">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-en">SKILLS</span>
+                <span class="title-ja">スキル</span>
+            </h2>
+            <div class="charm-grid">
+                <div class="charm-card">
+                    <div class="charm-icon">💻</div>
+                    <h3 class="charm-title">フロントエンド</h3>
+                    <p class="charm-description">
+                        TypeScript、JavaScript、React、Next.js、React Native（Expo）、Tailwind CSS、TanStack Queryを使用したモダンなWebアプリケーション開発。型を活かしたUI実装、状態管理、UX改善が得意です。
+                    </p>
+                </div>
+                <div class="charm-card">
+                    <div class="charm-icon">⚙️</div>
+                    <h3 class="charm-title">バックエンド・DB</h3>
+                    <p class="charm-description">
+                        Go、Gin、GORM、Ruby、Ruby on Rails、REST API、Clean Architectureを活用したサーバーサイド開発。PostgreSQL、MariaDB、SQL Serverなどのデータベース設計・実装経験があります。
+                    </p>
+                </div>
+                <div class="charm-card">
+                    <div class="charm-icon">📱</div>
+                    <h3 class="charm-title">モバイル・開発環境</h3>
+                    <p class="charm-description">
+                        Swift、SwiftUI、BLEを使用したiOSアプリ開発。Docker、Docker Compose、Git、GitHub、GitHub Actions、Linux、GCPなどの開発環境構築・CI/CD経験もあります。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- プロジェクトセクション -->
+    <section id="projects" class="section gallery-section">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-en">PROJECTS</span>
+                <span class="title-ja">プロジェクト</span>
+            </h2>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <a href="https://github.com/s0nmy/ChronoMe" target="_blank" rel="noopener noreferrer">
+                        <div class="gallery-placeholder">
+                            <span class="placeholder-text">ChronoMe</span>
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">ChronoMe</h3>
+                            <p class="project-description">時間記録・管理Webアプリ。個人で要件定義から設計、実装、テストまで担当。3日間で開発。</p>
+                            <p class="project-tech">Go / Gin / React / TypeScript / PostgreSQL</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="gallery-item">
+                    <a href="https://github.com/Digix00/hackathon" target="_blank" rel="noopener noreferrer">
+                        <div class="gallery-placeholder">
+                            <span class="placeholder-text">すれック</span>
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">すれック</h3>
+                            <p class="project-description">近距離音楽交換SNS。GDG on Campus Hackathon 2026でPdM・バックエンド・iOSフロントエンドを担当。ゴネンゴ賞受賞。</p>
+                            <p class="project-tech">Go / Swift / SwiftUI / BLE / GCP</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="gallery-item">
+                    <a href="https://github.com/TeamH04/team-production" target="_blank" rel="noopener noreferrer">
+                        <div class="gallery-placeholder">
+                            <span class="placeholder-text">Kuguri</span>
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">Kuguri</h3>
+                            <p class="project-description">チーム制作プロジェクト。PdM・フロントエンドとして、UI実装・UX改善・プロダクト管理を担当。</p>
+                            <p class="project-tech">React / TypeScript / React Native (Expo)</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="gallery-item">
+                    <div class="gallery-placeholder">
+                        <span class="placeholder-text">SparkDay</span>
+                    </div>
+                    <div class="project-info">
+                        <h3 class="project-title">SparkDay</h3>
+                        <p class="project-description">Alpha+ Projectでのチーム制作プロジェクト。</p>
+                        <p class="project-tech">詳細準備中</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 活動情報セクション -->
+    <section id="activity" class="section activity-section">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-en">ACTIVITY</span>
+                <span class="title-ja">活動実績</span>
+            </h2>
+            <div class="activity-content">
+                <div class="activity-card">
+                    <div class="activity-date">2024.04 - 2028.03</div>
+                    <h3 class="activity-title">神戸電子専門学校での学び</h3>
+                    <p class="activity-description">
+                        神戸電子専門学校 ITエキスパート科にてC言語、Go、TypeScript、Web開発、データベース、Linux、ネットワーク等を学習。基本情報技術者試験、C言語プログラミング能力認定試験2級を取得しました。
+                    </p>
+                </div>
+                <div class="activity-card">
+                    <div class="activity-date">2026.02 - 現在</div>
+                    <h3 class="activity-title">株式会社オプティム インターンシップ</h3>
+                    <p class="activity-description">
+                        医療系プロダクトのバックエンド開発を担当。Go、PostgreSQL、Docker、Azurite、Clean Architectureを使用した実務経験を積んでいます。
+                    </p>
+                </div>
+                <div class="activity-card">
+                    <div class="activity-date">2026.03</div>
+                    <h3 class="activity-title">GDG on Campus Hackathon 2026</h3>
+                    <p class="activity-description">
+                        4人チームでPdM・バックエンド・iOSフロントエンドを担当し、近距離音楽交換SNS「すれック」を開発。ゴネンゴ賞（スポンサー賞）を受賞しました。
+                    </p>
+                </div>
+                <div class="activity-card">
+                    <div class="activity-date">その他の活動</div>
+                    <h3 class="activity-title">コミュニティ活動・イベント運営</h3>
+                    <p class="activity-description">
+                        GDG Kwansaiのイベント運営、DevFest Tokyo広報で3人チームにて登録者数1,000人を達成。Alpha+ ProjectではPgMとして進行管理・情報整理・運営改善を担当しました。
+                    </p>
+                </div>
+                <div class="activity-card">
+                    <div class="activity-date">LINKS</div>
+                    <h3 class="activity-title">SNS・コード</h3>
+                    <p class="activity-description">
+                        日々の学習記録や開発したプロジェクトは各プラットフォームで公開しています。ぜひご覧ください。
+                    </p>
+                    <div class="sns-links">
+                        <a href="https://github.com/s0nmy/" target="_blank" rel="noopener noreferrer" class="sns-link sns-github">
+                            <svg class="sns-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            <span>GitHub</span>
+                        </a>
+                        <a href="https://note.com/snmy_" target="_blank" rel="noopener noreferrer" class="sns-link sns-website">
+                            <svg class="sns-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                            </svg>
+                            <span>note</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- フッター -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>Miyu Sone</h3>
+                    <p>ENGINEER PORTFOLIO</p>
+                </div>
+                <div class="footer-sns">
+                    <p class="footer-sns-label">Contact & Social</p>
+                    <div class="footer-sns-icons">
+                        <a href="https://github.com/s0nmy/" target="_blank" rel="noopener noreferrer" class="footer-sns-icon" aria-label="GitHub">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                        </a>
+                        <a href="mailto:kd1417997@st.kobedenshi.ac.jp" class="footer-sns-icon" aria-label="Email">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                        </a>
+                        <a href="https://note.com/snmy_" target="_blank" rel="noopener noreferrer" class="footer-sns-icon" aria-label="note">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <p class="footer-text">
+                    Go・TypeScript・Reactを中心に、Web・モバイルアプリ開発とプロダクトマネジメントに取り組んでいます。
+                </p>
+                <p class="footer-copyright">
+                    &copy; 2024 Miyu Sone. All Rights Reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
