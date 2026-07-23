@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initHeaderScroll();
     initSmoothScroll();
     initGalleryHover();
+    initProjectImageRotators();
+    initProjectMediaRotators();
 });
 
 // ==================== スクロールアニメーション ====================
@@ -120,6 +122,161 @@ function initGalleryHover() {
             // 実際の実装では、画像のモーダル表示などを追加可能
             console.log('Gallery item clicked');
         });
+    });
+}
+
+// ==================== 複数画像を持つプロジェクトのプレビュー ====================
+function initProjectImageRotators() {
+    const imageContainers = document.querySelectorAll('[data-gallery-images]');
+    const intervalMs = 1400;
+
+    imageContainers.forEach(function(container) {
+        const images = container.dataset.galleryImages.split(',').map(function(path) {
+            return path.trim();
+        });
+        const image = container.querySelector('.gallery-photo');
+        const imageCount = container.querySelector('.gallery-image-count');
+        let currentIndex = 0;
+        let timer;
+
+        if (!image || images.length < 2) {
+            return;
+        }
+
+        images.slice(1).forEach(function(path) {
+            const preloadImage = new Image();
+            preloadImage.src = path;
+        });
+
+        function showImage(index) {
+            currentIndex = index;
+            image.classList.add('is-changing');
+
+            window.setTimeout(function() {
+                image.src = images[currentIndex];
+                image.alt = 'ChronoMeの画面 ' + (currentIndex + 1);
+                if (imageCount) {
+                    imageCount.textContent = (currentIndex + 1) + ' / ' + images.length;
+                }
+                image.classList.remove('is-changing');
+            }, 200);
+        }
+
+        function startRotation() {
+            if (timer) {
+                return;
+            }
+
+            showImage((currentIndex + 1) % images.length);
+            timer = window.setInterval(function() {
+                showImage((currentIndex + 1) % images.length);
+            }, intervalMs);
+        }
+
+        function stopRotation() {
+            window.clearInterval(timer);
+            timer = undefined;
+            showImage(0);
+        }
+
+        container.addEventListener('mouseenter', startRotation);
+        container.addEventListener('mouseleave', stopRotation);
+        container.addEventListener('focusin', startRotation);
+        container.addEventListener('focusout', stopRotation);
+    });
+}
+
+// ==================== 画像・動画を持つプロジェクトのプレビュー ====================
+function initProjectMediaRotators() {
+    const mediaContainers = document.querySelectorAll('[data-gallery-media]');
+
+    mediaContainers.forEach(function(container) {
+        const media = container.dataset.galleryMedia.split(',').map(function(path) {
+            const src = path.trim();
+            return { src: src, type: src.endsWith('.mp4') ? 'video' : 'image' };
+        });
+        const image = container.querySelector('.gallery-photo');
+        const video = container.querySelector('.gallery-video');
+        const imageCount = container.querySelector('.gallery-image-count');
+        let currentIndex = 0;
+        let timer;
+        let changeTimer;
+
+        if (!image || !video || media.length < 2) {
+            return;
+        }
+
+        media.filter(function(item) {
+            return item.type === 'image';
+        }).slice(1).forEach(function(item) {
+            const preloadImage = new Image();
+            preloadImage.src = item.src;
+        });
+
+        function updateCount() {
+            if (imageCount) {
+                imageCount.textContent = (currentIndex + 1) + ' / ' + media.length;
+            }
+        }
+
+        function showMedia(index) {
+            currentIndex = index;
+            const item = media[currentIndex];
+            window.clearTimeout(changeTimer);
+
+            if (item.type === 'video') {
+                image.classList.add('is-changing');
+                if (video.dataset.source !== item.src) {
+                    video.src = item.src;
+                    video.dataset.source = item.src;
+                }
+                video.currentTime = 0;
+                video.classList.add('is-active');
+                video.play().catch(function() {});
+            } else {
+                video.pause();
+                video.classList.remove('is-active');
+                image.classList.add('is-changing');
+
+                changeTimer = window.setTimeout(function() {
+                    image.src = item.src;
+                    image.alt = 'すれックの画面 ' + (currentIndex + 1);
+                    image.classList.remove('is-changing');
+                }, 200);
+            }
+
+            updateCount();
+        }
+
+        function scheduleNext() {
+            const duration = media[currentIndex].type === 'video' ? 6000 : 1400;
+            timer = window.setTimeout(function() {
+                showMedia((currentIndex + 1) % media.length);
+                scheduleNext();
+            }, duration);
+        }
+
+        function startRotation() {
+            if (timer) {
+                return;
+            }
+
+            showMedia((currentIndex + 1) % media.length);
+            scheduleNext();
+        }
+
+        function stopRotation() {
+            window.clearTimeout(timer);
+            timer = undefined;
+            video.pause();
+            video.classList.remove('is-active');
+            showMedia(0);
+        }
+
+        container.addEventListener('mouseenter', startRotation);
+        container.addEventListener('mouseleave', stopRotation);
+        container.addEventListener('focusin', startRotation);
+        container.addEventListener('focusout', stopRotation);
     });
 }
 

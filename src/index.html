@@ -33,6 +33,15 @@
             <source src="videos/hero-source.mp4" type="video/mp4">
         </video>
         <div class="hero-overlay"></div>
+        <div class="hero-stars" aria-hidden="true">
+            <span class="hero-star hero-star-large" style="--x: 12%; --y: 21%; --delay: 0s;"></span>
+            <span class="hero-star" style="--x: 25%; --y: 68%; --delay: 1.2s;"></span>
+            <span class="hero-star" style="--x: 38%; --y: 16%; --delay: 2.1s;"></span>
+            <span class="hero-star hero-star-large" style="--x: 73%; --y: 24%; --delay: 0.7s;"></span>
+            <span class="hero-star" style="--x: 87%; --y: 43%; --delay: 1.7s;"></span>
+            <span class="hero-star" style="--x: 78%; --y: 75%; --delay: 2.8s;"></span>
+            <span class="shooting-star"></span>
+        </div>
         <div class="hero-content">
             <p class="hero-subtitle">MIYU SONE</p>
             <h2 class="hero-title">Portfolio</h2>
@@ -68,11 +77,6 @@
                 <span class="title-ja">プロフィール</span>
             </h2>
             <div class="profile-content">
-                <div class="profile-image">
-                    <div class="image-placeholder">
-                        <span class="placeholder-text">YOUR PHOTO</span>
-                    </div>
-                </div>
                 <div class="profile-info">
                     <div class="profile-item">
                         <span class="profile-label">名前</span>
@@ -108,25 +112,103 @@
             </h2>
             <div class="charm-grid">
                 <div class="charm-card">
-                    <div class="charm-icon">💻</div>
                     <h3 class="charm-title">フロントエンド</h3>
-                    <p class="charm-description">
-                        TypeScript、JavaScript、React、Next.js、React Native（Expo）、Tailwind CSS、TanStack Queryを使用したモダンなWebアプリケーション開発。型を活かしたUI実装、状態管理、UX改善が得意です。
-                    </p>
+                    <div class="tech-icons">
+                        <div class="tech-icon" title="TypeScript">
+                            <svg viewBox="0 0 128 128">
+                                <rect width="128" height="128" fill="#3178C6"/>
+                                <path d="M22.67 47h23.67v78.67h-23.67V47zm82.67 0v78.67H81.67V47h23.67z" fill="#fff"/>
+                                <path d="M1.5 63.91v62.5h125v-125H1.5v62.5zm100.73-5a15.56 15.56 0 017.82 4.5 20.58 20.58 0 013 4c0 .16-5.4 3.81-8.69 5.85-.12.08-.6-.44-1.13-1.23a7.09 7.09 0 00-5.87-3.53c-3.79-.26-6.23 1.73-6.21 5a4.58 4.58 0 00.54 2.34c.83 1.73 2.38 2.76 7.24 4.86 8.95 3.85 12.78 6.39 15.16 10 2.66 4 3.25 10.46 1.45 15.24-2 5.2-6.9 8.73-13.83 9.9a38.32 38.32 0 01-9.52-.1 23 23 0 01-12.72-6.63c-1.15-1.27-3.39-4.58-3.25-4.82a9.34 9.34 0 011.15-.73L82 101l3.59-2.08.75 1.11a16.78 16.78 0 004.74 4.54c4 2.1 9.46 1.81 12.16-.62a5.43 5.43 0 00.69-6.92c-1-1.39-3-2.56-8.59-5-6.45-2.78-9.23-4.5-11.77-7.24a16.48 16.48 0 01-3.43-6.25 25 25 0 01-.22-8c1.33-6.23 6-10.58 12.82-11.87a31.66 31.66 0 019.49.26zm-29.34 5.24v5.12H56.66v46.23H45.15V69.26H28.88v-5a49.19 49.19 0 01.12-5.17C29.08 59 39 59 51 59h21.83z" fill="#fff"/>
+                            </svg>
+                        </div>
+                        <div class="tech-icon" title="React">
+                            <svg viewBox="0 0 128 128">
+                                <g fill="#61DAFB"><circle cx="64" cy="64" r="11.4"/><path d="M107.3 45.2c-2.2-.8-4.5-1.6-6.9-2.3.6-2.4 1.1-4.8 1.5-7.1 2.1-13.2-.2-22.5-6.6-26.1-1.9-1.1-4-1.6-6.4-1.6-7 0-15.9 5.2-24.9 13.9-9-8.7-17.9-13.9-24.9-13.9-2.4 0-4.5.5-6.4 1.6-6.4 3.7-8.7 13-6.6 26.1.4 2.3.9 4.7 1.5 7.1-2.4.7-4.7 1.4-6.9 2.3C8.2 50 1.4 56.6 1.4 64s6.9 14 19.3 18.8c2.2.8 4.5 1.6 6.9 2.3-.6 2.4-1.1 4.8-1.5 7.1-2.1 13.2.2 22.5 6.6 26.1 1.9 1.1 4 1.6 6.4 1.6 7.1 0 16-5.2 24.9-13.9 9 8.7 17.9 13.9 24.9 13.9 2.4 0 4.5-.5 6.4-1.6 6.4-3.7 8.7-13 6.6-26.1-.4-2.3-.9-4.7-1.5-7.1 2.4-.7 4.7-1.4 6.9-2.3 12.5-4.8 19.3-11.4 19.3-18.8s-6.8-14-19.3-18.8zM92.5 14.7c4.1 2.4 5.5 9.8 3.8 20.3-.3 2.1-.8 4.3-1.4 6.6-5.2-1.2-10.7-2-16.5-2.5-3.4-4.8-6.9-9.1-10.4-13 7.4-7.3 14.9-12.3 21-12.3 1.3 0 2.5.3 3.5.9zM81.3 74c-1.8 3.2-3.9 6.4-6.1 9.6-3.7.3-7.4.4-11.2.4-3.9 0-7.6-.1-11.2-.4-2.2-3.2-4.2-6.4-6-9.6-1.9-3.3-3.7-6.7-5.3-10 1.6-3.3 3.4-6.7 5.3-10 1.8-3.2 3.9-6.4 6.1-9.6 3.7-.3 7.4-.4 11.2-.4 3.9 0 7.6.1 11.2.4 2.2 3.2 4.2 6.4 6 9.6 1.9 3.3 3.7 6.7 5.3 10-1.7 3.3-3.4 6.6-5.3 10zm8.3-3.3c1.5 3.5 2.7 6.9 3.8 10.3-3.4.8-7 1.4-10.8 1.9 1.2-1.9 2.5-3.9 3.6-6 1.2-2.1 2.3-4.2 3.4-6.2zM64 97.8c-2.4-2.6-4.7-5.4-6.9-8.3 2.3.1 4.6.2 6.9.2 2.3 0 4.6-.1 6.9-.2-2.2 2.9-4.5 5.7-6.9 8.3zm-18.6-15c-3.8-.5-7.4-1.1-10.8-1.9 1.1-3.3 2.3-6.8 3.8-10.3 1.1 2 2.2 4.1 3.4 6.1 1.2 2.2 2.4 4.1 3.6 6.1zm-7-25.5c-1.5-3.5-2.7-6.9-3.8-10.3 3.4-.8 7-1.4 10.8-1.9-1.2 1.9-2.5 3.9-3.6 6-1.2 2.1-2.3 4.2-3.4 6.2zM64 30.2c2.4 2.6 4.7 5.4 6.9 8.3-2.3-.1-4.6-.2-6.9-.2-2.3 0-4.6.1-6.9.2 2.2-2.9 4.5-5.7 6.9-8.3zm22.2 21.1c-1.2-2-2.2-4.1-3.4-6.2-1.2-2.1-2.4-4.1-3.6-6 3.8.5 7.4 1.1 10.8 1.9-1.1 3.3-2.3 6.8-3.8 10.3zm-11.4-14.7c-1.6 1.3-3.2 2.7-4.8 4.2-1.6-1.5-3.2-2.9-4.8-4.2-.3-1.7-.4-3.4-.4-5.1 0-1.7.1-3.4.4-5.1 1.6-1.3 3.2-2.7 4.8-4.2 1.6 1.5 3.2 2.9 4.8 4.2.3 1.7.4 3.4.4 5.1 0 1.7-.1 3.4-.4 5.1z"/></g>
+                            </svg>
+                        </div>
+                        <div class="tech-icon" title="Next.js">
+                            <svg viewBox="0 0 128 128">
+                                <circle cx="64" cy="64" r="64" fill="#000"/>
+                                <path d="M106.317 112.014 49.167 38.4H38.4v51.179h8.614v-40.24l52.54 67.884a64.216 64.216 0 006.763-5.209z" fill="#fff"/>
+                                <path fill="#fff" d="M81.778 38.4h8.533v51.2h-8.533z"/>
+                            </svg>
+                        </div>
+                        <div class="tech-icon" title="Tailwind CSS">
+                            <svg viewBox="0 0 128 128">
+                                <path d="M64.004 25.602c-17.067 0-27.73 8.53-32 25.597 6.398-8.531 13.867-11.73 22.398-9.597 4.871 1.214 8.352 4.746 12.207 8.66C72.883 56.629 80.145 64 96.004 64c17.066 0 27.73-8.531 32-25.602-6.399 8.536-13.867 11.735-22.399 9.602-4.87-1.215-8.347-4.746-12.207-8.66-6.27-6.367-13.53-13.738-29.394-13.738zM32.004 64c-17.066 0-27.73 8.531-32 25.602C6.402 81.066 13.87 77.867 22.402 80c4.871 1.215 8.352 4.746 12.207 8.66 6.274 6.367 13.536 13.738 29.395 13.738 17.066 0 27.73-8.53 32-25.597-6.399 8.531-13.867 11.73-22.399 9.597-4.87-1.214-8.347-4.746-12.207-8.66C55.128 71.371 47.868 64 32.004 64zm0 0" fill="#38bdf8"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="skill-tags" aria-label="フロントエンドのスキル">
+                        <span class="skill-tag">JavaScript</span>
+                        <span class="skill-tag">React Native</span>
+                        <span class="skill-tag">TanStack Query</span>
+                    </div>
                 </div>
                 <div class="charm-card">
-                    <div class="charm-icon">⚙️</div>
                     <h3 class="charm-title">バックエンド・DB</h3>
-                    <p class="charm-description">
-                        Go、Gin、GORM、Ruby、Ruby on Rails、REST API、Clean Architectureを活用したサーバーサイド開発。PostgreSQL、MariaDB、SQL Serverなどのデータベース設計・実装経験があります。
-                    </p>
+                    <div class="tech-icons">
+                        <div class="tech-icon" title="Go">
+                            <svg viewBox="0 0 205 78">
+                                <g fill="#00ADD8" fill-rule="evenodd">
+                                    <path d="M16.2 24.1c-.4 0-.5-.2-.3-.5l2.1-2.7c.2-.3.7-.5 1.1-.5h35.7c.4 0 .5.3.3.6l-1.7 2.6c-.2.3-.7.6-1 .6l-36.2-.1zM1.1 33.3c-.4 0-.5-.2-.3-.5l2.1-2.7c.2-.3.7-.5 1.1-.5h45.6c.4 0 .6.3.5.6l-.8 2.4c-.1.4-.5.6-.9.6l-47.3.1zM25.3 42.5c-.4 0-.5-.3-.3-.6l1.4-2.5c.2-.3.6-.6 1-.6h20c.4 0 .6.3.6.7l-.2 2.4c0 .4-.4.7-.7.7l-21.8-.1zM121.3 23.7c-6.3 1.6-10.6 2.8-16.8 4.4-1.5.4-1.6.5-2.9-1-1.5-1.7-2.6-2.8-4.7-3.8-6.3-3.1-12.4-2.2-18.1 1.5-6.8 4.4-10.3 10.9-10.2 19 .1 8 5.6 14.6 13.5 15.7 6.8.9 12.5-1.5 17-6.6.9-1.1 1.7-2.3 2.7-3.7h-19.3c-2.1 0-2.6-1.3-1.9-3 1.3-3.1 3.7-8.3 5.1-10.9.3-.6 1-1.6 2.5-1.6h36.4c-.2 2.7-.2 5.4-.6 8.1-1.1 7.2-3.8 13.8-8.2 19.6-7.2 9.5-16.6 15.4-28.5 17-9.8 1.3-18.9-.6-26.9-6.6-7.4-5.6-11.6-13-12.7-22.2-1.3-10.9 1.9-20.7 8.5-29.3 7.1-9.3 16.5-15.2 28-17.3 9.4-1.7 18.4-.6 26.5 4.9 5.3 3.5 9.1 8.3 11.6 14.1.6.9.2 1.4-1 1.7z"/>
+                                    <path d="M161.5 76.7c-9.1-.2-17.4-2.8-24.4-8.8-5.9-5.1-9.6-11.6-10.8-19.3-1.8-11.3 1.3-21.3 8.1-30.2 7.3-9.6 16.1-14.6 28-16.7 10.2-1.8 19.8-.8 28.5 5.1 7.9 5.4 12.8 12.7 14.1 22.3 1.7 13.5-2.2 24.5-11.5 33.9-6.6 6.7-14.7 10.9-24 12.8-2.7.5-5.4.6-8 .9zm23.8-40.4c-.1-1.3-.1-2.3-.3-3.3-1.8-9.9-10.9-15.5-20.4-13.3-9.3 2.1-15.3 8-17.5 17.4-1.8 7.8 2 15.7 9.2 18.9 5.5 2.4 11 2.1 16.3-.6 7.9-4.1 12.2-10.5 12.7-19.1z"/>
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="tech-icon" title="PostgreSQL">
+                            <svg viewBox="0 0 128 128">
+                                <path d="M93.95 11.82c-10.11.2-17.64 2.06-25.06 6.53-1.99-.13-4-.2-6.03-.2-7.87 0-15.08 1.49-20.8 4.08C29.81 28.43 22.5 39.37 22.5 52.5c0 4.98 1.05 9.63 2.93 13.84-7.7 4.33-13.43 10.71-13.43 18.66 0 13.67 15.51 24.75 34.66 24.75 5.29 0 10.32-.77 14.84-2.16 6.37 8.54 17.43 14.41 30 14.41 19.02 0 34.44-11.66 34.44-26.05 0-7.98-4.87-15.09-12.39-19.88 3.76-5.27 6.01-11.88 6.01-19.07 0-17.51-13.79-31.75-30.81-31.95-.4-6.09-2.98-10.42-6.18-13.24 2.3-.96 4.73-1.73 7.38-1.99z" fill="#336791"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="skill-tags" aria-label="バックエンド・データベースのスキル">
+                        <span class="skill-tag">Gin</span>
+                        <span class="skill-tag">GORM</span>
+                        <span class="skill-tag">REST API</span>
+                        <span class="skill-tag">Clean Architecture</span>
+                        <span class="skill-tag">MariaDB</span>
+                        <span class="skill-tag">SQL Server</span>
+                    </div>
                 </div>
                 <div class="charm-card">
-                    <div class="charm-icon">📱</div>
                     <h3 class="charm-title">モバイル・開発環境</h3>
-                    <p class="charm-description">
-                        Swift、SwiftUI、BLEを使用したiOSアプリ開発。Docker、Docker Compose、Git、GitHub、GitHub Actions、Linux、GCPなどの開発環境構築・CI/CD経験もあります。
-                    </p>
+                    <div class="tech-icons">
+                        <div class="tech-icon" title="Swift">
+                            <svg viewBox="0 0 128 128">
+                                <linearGradient id="swiftGrad" x1="24.67" y1="102.33" x2="103.33" y2="25.67" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0" stop-color="#F88F3F"/>
+                                    <stop offset="1" stop-color="#ED523D"/>
+                                </linearGradient>
+                                <path d="M64 0C28.65 0 0 28.65 0 64s28.65 64 64 64 64-28.65 64-64S99.35 0 64 0zm37.08 81.73c-5.45 8.99-14.12 16.17-24.52 20.29-10.4 4.12-21.88 5.09-32.52 2.73-10.64-2.36-20.29-7.85-27.37-15.57-7.08-7.72-11.32-17.49-12.03-27.73 11.38 13.38 27.65 24.35 46.44 29.95-15.45-9.62-28.54-22.93-37.99-38.78 9.34 8.85 20.34 15.91 32.42 20.67C57.29 65.57 66.6 55.95 72.42 44.5c5.82-11.45 8.1-24.37 6.56-37.09 14.76 16.09 21.61 37.69 18.58 58.59-.91 6.32-2.84 12.47-5.73 18.23z" fill="url(#swiftGrad)"/>
+                            </svg>
+                        </div>
+                        <div class="tech-icon" title="Docker">
+                            <svg viewBox="0 0 128 128">
+                                <path d="M124.8 52.1c-4.3-2.5-10-2.8-14.8-1.4-.6-5.2-4-9.7-8-12.9l-1.6-1.3-1.4 1.6c-2.7 3.1-3.5 8.3-3.1 12.3.3 2.9 1.2 5.9 3 8.3-1.4.8-2.9 1.9-4.3 2.4-2.8 1-5.9 2-8.9 2H79V49H66V24H51v12H26v13H13v14H1.8l-.2 1.5c-.5 6.4.3 12.6 3 18.5 2.1 4.8 5.1 8.8 9.1 11.8 6.1 4.6 13.7 7.3 21.5 7.8 3.1.2 6.2.3 9.3.3 5.6 0 11.1-.4 16.5-1.3 6.9-1.1 13.5-3.5 19.3-6.9 3.9-2.3 7.4-5.2 10.3-8.7 3.2-3.9 5.6-8.3 7.1-13.1 2 .1 4 .2 6 .2 4.8 0 9.4-.7 13.5-2.1 3.9-1.4 7.3-3.5 10.1-6.3l1.1-1.1-1.1-1.1c-2.8-2.8-6.5-4.8-10.5-5.9zM67 48H54V36h13v12zm-14 0H40V36h13v12zm-14 0H26V36h13v12zm-14 0H12V36h13v12zm28 13H40V49h13v12zm-14 0H26V49h13v12zm-14 0H12V49h13v12zm14-25H26V24h13v12z" fill="#0DB7ED"/>
+                            </svg>
+                        </div>
+                        <div class="tech-icon" title="GitHub">
+                            <svg viewBox="0 0 128 128">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M64 1.512c-23.493 0-42.545 19.047-42.545 42.545 0 18.797 12.19 34.745 29.095 40.37 2.126.394 2.907-.923 2.907-2.047 0-1.014-.04-4.366-.058-7.92-11.837 2.573-14.334-5.02-14.334-5.02-1.935-4.918-4.724-6.226-4.724-6.226-3.86-2.64.29-2.586.29-2.586 4.273.3 6.523 4.385 6.523 4.385 3.794 6.504 9.953 4.623 12.38 3.536.383-2.75 1.485-4.628 2.702-5.69-9.45-1.075-19.384-4.724-19.384-21.026 0-4.645 1.662-8.44 4.384-11.42-.442-1.072-1.898-5.4.412-11.26 0 0 3.572-1.142 11.7 4.363 3.395-.943 7.035-1.416 10.65-1.432 3.616.017 7.258.49 10.658 1.432 8.12-5.504 11.688-4.362 11.688-4.362 2.316 5.86.86 10.187.418 11.26 2.728 2.978 4.378 6.774 4.378 11.42 0 16.34-9.953 19.938-19.427 20.99 1.526 1.32 2.886 3.91 2.886 7.88 0 5.692-.048 10.273-.048 11.674 0 1.13.766 2.458 2.922 2.04 16.896-5.632 29.07-21.574 29.07-40.365C106.545 20.56 87.497 1.512 64 1.512z" fill="#181616"/>
+                            </svg>
+                        </div>
+                        <div class="tech-icon" title="Google Cloud">
+                            <svg viewBox="0 0 128 128">
+                                <path d="M80.6 40.3h.4l-.2-.2 14-14v-.3c-11.8-10.4-28.1-14-43.2-9.5C36.5 20.8 24.8 32.8 20.3 48c.2-.1.5-.2.8-.2 5.2-3.4 11.4-5.4 17.9-5.4 2.2 0 4.3.2 6.4.7.1-.1.2-.1.3-.1 9-9.9 24.2-11.1 34.9-2.7z" fill="#EA4335"/>
+                                <path d="M108.1 47.8c-2.3-8.5-7.1-16.2-13.8-22.1L80.8 40.1c6 4.9 9.5 12.3 9.5 20.1v2.5c6.9 0 12.5 5.6 12.5 12.5s-5.6 12.5-12.5 12.5H64.1l-2.5 2.5V103l2.5 2.5h26.2c15.6.1 28.3-12.4 28.4-28 .1-10.7-5.9-20.5-15.6-25.7z" fill="#4285F4"/>
+                                <path d="M38.3 105.5h26.2V87.7H38.3c-1.7 0-3.3-.4-4.8-1l-3.5 1.1-9.5 9.5-1.2 3.2c5.1 3.2 11 4.9 17.2 5h1.8z" fill="#34A853"/>
+                                <path d="M38.3 46.2c-15.6 0-28.3 12.7-28.3 28.3S22.7 102.8 38.3 102.8V84.5c-6.9 0-12.5-5.6-12.5-12.5s5.6-12.5 12.5-12.5z" fill="#FBBC05"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="skill-tags" aria-label="モバイル・開発環境のスキル">
+                        <span class="skill-tag">SwiftUI</span>
+                        <span class="skill-tag">BLE</span>
+                        <span class="skill-tag">Docker Compose</span>
+                        <span class="skill-tag">GitHub Actions</span>
+                        <span class="skill-tag">Linux</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -142,8 +224,9 @@
             <div class="gallery-grid">
                 <div class="gallery-item">
                     <a href="https://github.com/s0nmy/ChronoMe" target="_blank" rel="noopener noreferrer">
-                        <div class="gallery-placeholder">
-                            <span class="placeholder-text">ChronoMe</span>
+                        <div class="gallery-placeholder" data-gallery-images="../images/ChronoMe/00_ChronoMe.png,../images/ChronoMe/02_GanttChart.png,../images/ChronoMe/03_Top.png">
+                            <img class="gallery-photo" src="../images/ChronoMe/00_ChronoMe.png" alt="ChronoMeの画面" loading="lazy" decoding="async">
+                            <span class="gallery-image-count" aria-live="polite">1 / 3</span>
                         </div>
                         <div class="project-info">
                             <h3 class="project-title">ChronoMe</h3>
@@ -154,8 +237,10 @@
                 </div>
                 <div class="gallery-item">
                     <a href="https://github.com/Digix00/hackathon" target="_blank" rel="noopener noreferrer">
-                        <div class="gallery-placeholder">
-                            <span class="placeholder-text">すれック</span>
+                        <div class="gallery-placeholder" data-gallery-media="../images/hackathon/00_hackathon.png,../images/hackathon/01_hackathon.png,../images/hackathon/02_hachathon.mp4">
+                            <img class="gallery-photo" src="../images/hackathon/00_hackathon.png" alt="すれックの画面" loading="lazy" decoding="async">
+                            <video class="gallery-video" muted playsinline preload="metadata" aria-label="すれックのデモ動画"></video>
+                            <span class="gallery-image-count" aria-live="polite">1 / 3</span>
                         </div>
                         <div class="project-info">
                             <h3 class="project-title">すれック</h3>
@@ -167,7 +252,7 @@
                 <div class="gallery-item">
                     <a href="https://github.com/TeamH04/team-production" target="_blank" rel="noopener noreferrer">
                         <div class="gallery-placeholder">
-                            <span class="placeholder-text">Kuguri</span>
+                            <img class="gallery-photo" src="../images/Kuguri.png" alt="Kuguriの画面" loading="lazy" decoding="async">
                         </div>
                         <div class="project-info">
                             <h3 class="project-title">Kuguri</h3>
@@ -178,7 +263,7 @@
                 </div>
                 <div class="gallery-item">
                     <div class="gallery-placeholder">
-                        <span class="placeholder-text">SparkDay</span>
+                        <img class="gallery-photo" src="../images/Sparkday.png" alt="SparkDayの画面" loading="lazy" decoding="async">
                     </div>
                     <div class="project-info">
                         <h3 class="project-title">SparkDay</h3>
@@ -200,16 +285,16 @@
             <div class="activity-content">
                 <div class="activity-card">
                     <div class="activity-date">2024.04 - 2028.03</div>
-                    <h3 class="activity-title">神戸電子専門学校での学び</h3>
+                    <h3 class="activity-title">神戸電子専門学校</h3>
                     <p class="activity-description">
-                        神戸電子専門学校 ITエキスパート科にてC言語、Go、TypeScript、Web開発、データベース、Linux、ネットワーク等を学習。基本情報技術者試験、C言語プログラミング能力認定試験2級を取得しました。
+                        神戸電子専門学校 ITエキスパート科にてweb開発やネットワークなど幅広く学習。基本情報技術者試験、C言語プログラミング能力認定試験2級を取得しました。
                     </p>
                 </div>
                 <div class="activity-card">
                     <div class="activity-date">2026.02 - 現在</div>
                     <h3 class="activity-title">株式会社オプティム インターンシップ</h3>
                     <p class="activity-description">
-                        医療系プロダクトのバックエンド開発を担当。Go、PostgreSQL、Docker、Azurite、Clean Architectureを使用した実務経験を積んでいます。
+                        医療系プロダクトのバックエンド開発を担当。Go、PostgreSQL、Clean Architectureを使用した実務経験を積んでいます。
                     </p>
                 </div>
                 <div class="activity-card">
@@ -220,8 +305,15 @@
                     </p>
                 </div>
                 <div class="activity-card">
-                    <div class="activity-date">その他の活動</div>
-                    <h3 class="activity-title">コミュニティ活動・イベント運営</h3>
+                    <div class="activity-date">2025.03 - 2026.02</div>
+                    <h3 class="activity-title">Alpha+ Project</h3>
+                    <p class="activity-description">
+                        PgMコースとして進行管理・情報整理・運営改善を担当しました。経済産業省地方未踏プロジェクトに採択されています。
+                    </p>
+                </div>
+                <div class="activity-card">
+                    <div class="activity-date">2025.07 - 現在</div>
+                    <h3 class="activity-title">Google Developer Groups Greater Kwansai Organizer</h3>
                     <p class="activity-description">
                         GDG Kwansaiのイベント運営、DevFest Tokyo広報で3人チームにて登録者数1,000人を達成。Alpha+ ProjectではPgMとして進行管理・情報整理・運営改善を担当しました。
                     </p>
