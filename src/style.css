@@ -197,17 +197,17 @@ body {
 
 .shooting-star {
     position: absolute;
-    top: 18%;
-    right: 12%;
+    top: 33%;
+    right: 22%;
     width: 120px;
     height: 3px;
     background: linear-gradient(90deg, rgba(255, 255, 255, 0.98), rgba(224, 249, 255, 0));
     border-radius: 999px;
     filter: drop-shadow(0 0 6px rgba(224, 249, 255, 0.95));
     opacity: 0;
-    transform: rotate(-34deg);
-    animation: shootingStar 8s ease-out infinite;
-    animation-delay: 5s;
+    transform: rotate(-28deg);
+    animation: shootingStar 10s ease-out infinite;
+    animation-delay: -6.2s;
 }
 
 .shooting-star::before {
@@ -224,10 +224,10 @@ body {
 }
 
 @keyframes shootingStar {
-    0% { opacity: 0; transform: translate(0, 0) rotate(-34deg); }
-    4% { opacity: 0.95; }
-    28% { opacity: 0; transform: translate(-240px, 150px) rotate(-34deg); }
-    100% { opacity: 0; transform: translate(-240px, 150px) rotate(-34deg); }
+    0%, 60% { opacity: 0; transform: translate(0, 0) rotate(-28deg); }
+    62% { opacity: 0.95; }
+    73% { opacity: 0; transform: translate(-190px, 120px) rotate(-28deg); }
+    100% { opacity: 0; transform: translate(-190px, 120px) rotate(-28deg); }
 }
 
 .hero-content {
