@@ -360,8 +360,27 @@ body {
 }
 
 .section-title {
+    position: relative;
+    width: fit-content;
     text-align: center;
-    margin-bottom: var(--spacing-lg);
+    margin: 0 auto var(--spacing-lg);
+}
+
+/* セクションタイトルに寄り添う、水色のきらめき */
+.section-title::after {
+    content: '';
+    position: absolute;
+    top: -0.65rem;
+    right: -3.2rem;
+    width: 40px;
+    height: 40px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 50'%3E%3Cpath fill='%235FB8D9' fill-opacity='.92' d='m9 0 2.2 7.8L19 10l-7.8 2.2L9 20l-2.2-7.8L0 10l6.8-2.2z'/%3E%3Cpath fill='%235FB8D9' fill-opacity='.82' d='m35 9 1.5 5.5L42 16l-5.5 1.5L35 23l-1.5-5.5L28 16l5.5-1.5z'/%3E%3Cpath fill='%235FB8D9' fill-opacity='.72' d='m20 29 1.2 4.3 4.3 1.2-4.3 1.2L20 40l-1.2-4.3-4.3-1.2 4.3-1.2z'/%3E%3C/svg%3E") center / contain no-repeat;
+    pointer-events: none;
+}
+
+.section:nth-of-type(even) .section-title::after {
+    right: auto;
+    left: -3.2rem;
 }
 
 .title-en {
