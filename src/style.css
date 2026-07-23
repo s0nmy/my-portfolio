@@ -442,6 +442,13 @@ body {
     text-align: center;
 }
 
+.charm-title {
+    font-size: 1.3rem;
+    color: var(--primary-dark);
+    margin-bottom: var(--spacing-md);
+    font-weight: 600;
+}
+
 .tech-icons {
     display: flex;
     justify-content: center;
@@ -452,12 +459,6 @@ body {
 .tech-icon {
     width: 64px;
     height: 64px;
-    padding: 0.65rem;
-    background: linear-gradient(145deg, #ffffff, #edf9fd);
-    border: 1px solid rgba(95, 184, 217, 0.2);
-    border-radius: 18px;
-    box-shadow: 0 5px 14px rgba(95, 184, 217, 0.1);
-    filter: grayscale(20%);
 }
 
 .tech-icon svg {
