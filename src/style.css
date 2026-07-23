@@ -512,10 +512,6 @@ body {
     transition: var(--transition);
 }
 
-.gallery-item:hover {
-    transform: scale(1.05);
-}
-
 .gallery-placeholder {
     aspect-ratio: 16 / 9;
     background: var(--bg-light);
