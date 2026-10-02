@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import type { Project } from "../content/projects";
+import { SectionTitle } from "./SectionTitle";
+
+const focusClassName = "focus-visible:outline-3 focus-visible:outline-[#154e67] focus-visible:outline-offset-[3px]";
 
 function ProjectCard({ project }: { project: Project }) {
   const [index, setIndex] = useState(0);
@@ -25,28 +28,49 @@ function ProjectCard({ project }: { project: Project }) {
   const picture = (
     // The gallery switches between files in public and does not need image optimization.
     // eslint-disable-next-line @next/next/no-img-element
-    <img className="gallery-photo" src={project.images[index]} alt={`${project.imageAlt}${project.images.length > 1 ? ` ${index + 1}` : ""}`} loading="lazy" decoding="async" />
+    <img
+      className="block h-full w-full object-cover object-center"
+      src={project.images[index]}
+      alt={`${project.imageAlt}${project.images.length > 1 ? ` ${index + 1}` : ""}`}
+      loading="lazy"
+      decoding="async"
+    />
   );
 
   return (
-    <article className="gallery-item" onMouseEnter={() => setActive(true)} onMouseLeave={() => { setActive(false); setIndex(0); }}>
-      <div className="gallery-placeholder">
-        {project.href ? <a className="gallery-picture-link" href={project.href} target="_blank" rel="noopener noreferrer" aria-label={`${project.title} のリポジトリを開く`}>{picture}</a> : picture}
+    <article
+      className="relative overflow-hidden rounded-brand transition-all duration-300 motion-reduce:transition-none"
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => {
+        setActive(false);
+        setIndex(0);
+      }}
+    >
+      <div className="relative flex aspect-video items-center justify-center overflow-hidden bg-surface-muted before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.3)_0%,transparent_70%)] before:opacity-0 before:transition-opacity before:duration-300 before:content-[''] hover:before:opacity-100 motion-reduce:before:transition-none">
+        {project.href ? (
+          <a className={`relative z-[1] block h-full w-full ${focusClassName}`} href={project.href} target="_blank" rel="noopener noreferrer" aria-label={`${project.title} のリポジトリを開く`}>
+            {picture}
+          </a>
+        ) : picture}
         {project.images.length > 1 && (
           <>
-            <span className="gallery-image-count" aria-live="polite">{index + 1} / {project.images.length}</span>
-            <div className="gallery-controls" role="group" aria-label={`${project.title} の画像切り替え`}>
-              <button type="button" onClick={() => setIndex((current) => (current - 1 + project.images.length) % project.images.length)} aria-label="前の画像">‹</button>
-              <button type="button" onClick={() => setIndex((current) => (current + 1) % project.images.length)} aria-label="次の画像">›</button>
+            <span className="absolute bottom-3 right-3 z-[2] rounded-full bg-[rgba(44,62,80,0.72)] px-[0.55rem] py-[0.4rem] font-en text-[0.75rem] leading-none text-white" aria-live="polite">{index + 1} / {project.images.length}</span>
+            <div className="pointer-events-none absolute inset-x-0 top-1/2 z-[3] flex -translate-y-1/2 justify-between px-2" role="group" aria-label={`${project.title} の画像切り替え`}>
+              <button className={`pointer-events-auto flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-0 bg-[rgba(44,62,80,0.72)] text-2xl text-white ${focusClassName}`} type="button" onClick={() => setIndex((current) => (current - 1 + project.images.length) % project.images.length)} aria-label="前の画像">‹</button>
+              <button className={`pointer-events-auto flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-0 bg-[rgba(44,62,80,0.72)] text-2xl text-white ${focusClassName}`} type="button" onClick={() => setIndex((current) => (current + 1) % project.images.length)} aria-label="次の画像">›</button>
             </div>
           </>
         )}
       </div>
-      <div className="project-info">
-        <h3 className="project-title">{project.title}</h3>
-        <p className="project-description">{project.description}</p>
-        <p className="project-tech">{project.technologies}</p>
-        {project.href && <a className="project-source" href={project.href} target="_blank" rel="noopener noreferrer">GitHubで見る<span aria-hidden="true"> ↗</span></a>}
+      <div className="relative z-[2] bg-white p-8">
+        <h3 className="mb-2 text-[1.2rem] font-semibold text-ink">{project.title}</h3>
+        <p className="mb-2 text-[0.9rem] leading-[1.7] text-muted">{project.description}</p>
+        <p className="font-en text-[0.8rem] font-medium text-primary-dark">{project.technologies}</p>
+        {project.href && (
+          <a className={`mt-3 block text-[0.85rem] text-primary-dark ${focusClassName}`} href={project.href} target="_blank" rel="noopener noreferrer">
+            GitHubで見る<span aria-hidden="true"> ↗</span>
+          </a>
+        )}
       </div>
     </article>
   );
@@ -54,10 +78,12 @@ function ProjectCard({ project }: { project: Project }) {
 
 export function ProjectGallery({ projects }: { projects: readonly Project[] }) {
   return (
-    <section id="projects" className="section gallery-section">
-      <div className="container">
-        <h2 className="section-title"><span className="title-en">PROJECTS</span><span className="title-ja">プロジェクト</span></h2>
-        <div className="gallery-grid">{projects.map((project) => <ProjectCard key={project.slug} project={project} />)}</div>
+    <section id="projects" className="relative z-10 bg-surface-muted py-24 max-[768px]:py-16">
+      <div className="mx-auto max-w-[1200px] px-8">
+        <SectionTitle english="PROJECTS" japanese="プロジェクト" sparkleSide="left" />
+        <div className="grid grid-cols-1 gap-8 min-[769px]:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
+          {projects.map((project) => <ProjectCard key={project.slug} project={project} />)}
+        </div>
       </div>
     </section>
   );

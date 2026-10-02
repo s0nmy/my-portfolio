@@ -11,12 +11,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ja">
+    <html lang="ja" className="scroll-smooth [scroll-padding-top:6rem] motion-reduce:scroll-auto">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body>{children}</body>
+      <body className="overflow-x-hidden bg-white font-main leading-[1.8] text-ink">{children}</body>
     </html>
   );
 }
