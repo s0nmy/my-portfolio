@@ -5,14 +5,42 @@
 個人ポートフォリオを、軽量で更新しやすく、独自ドメインで公開する。
 MVPでは作品紹介・プロフィール・外部SNSへの導線を提供する。
 
+## 現在の方針（2026-10-02）
+
+現在は静的なHTML / CSS / JavaScriptサイトだが、Next.js / Reactへ段階的に移行する。
+Cloudflare Registrarで取得したドメインとCloudflare DNSは維持し、初期のNext.js公開先もCloudflare Pagesを継続する。
+
+DBや管理画面はReact化と同時には導入しない。まずコンテンツと表示を分離し、ブラウザからの編集、画像アップロード、即時公開などの需要が明確になった時点でDB導入を判断する。
+
+詳しい判断は次の文書に記録する。
+
+- [移行計画](migration-plan.md)
+- [ADR 0001: Next.js / Reactへ段階的に移行する](adr/0001-nextjs-react-migration.md)
+- [ADR 0002: コンテンツ管理とDB導入時期を分ける](adr/0002-content-management-and-database.md)
+- [ADR 0003: Cloudflareのドメイン・DNSとアプリ実行基盤を分離する](adr/0003-cloudflare-domain-and-runtime.md)
+- [ADR 0004: developを統合ブランチ、mainを本番デプロイブランチとする](adr/0004-branching-and-deployment-strategy.md)
+
+## 現在と移行後
+
+| 領域 | 現在 | React化後の初期方針 | 将来の候補 |
+| --- | --- | --- | --- |
+| フロントエンド | HTML / CSS / JavaScript | Next.js / React / TypeScript | 継続 |
+| コンテンツ | HTMLへ直書き | TypeScriptまたはJSONへ分離 | SupabaseなどのDB |
+| 画像・動画 | リポジトリ内 | `public/images`などへ整理 | Supabase Storage / Cloudflare R2 |
+| ホスティング | Cloudflare Pages | Cloudflare Pagesの静的出力 | Cloudflare WorkersまたはVercel |
+| ドメイン・DNS | Cloudflare Registrar / DNS | 継続 | 継続 |
+| 管理画面 | なし | なし | Next.js `/admin` |
+| 認証 | なし | なし | Supabase Authまたは別の認証基盤 |
+
 ## MVPの構成
 
 ```text
 GitHub repository
-  └─ push / pull request
-      └─ Cloudflare Pages
-          └─ Cloudflare DNS + 独自ドメイン
-              └─ 訪問者
+  └─ feature/* → develop（Preview）
+      └─ develop → main（Production）
+          └─ Cloudflare Pages
+              └─ Cloudflare DNS + 独自ドメイン
+                  └─ 訪問者
 ```
 
 | 領域 | 採用するもの | 役割 |
@@ -35,11 +63,16 @@ GitHub repository
 ## デプロイ運用
 
 1. GitHubの`main`ブランチを本番ブランチにする。
-2. Cloudflare PagesとGitHubリポジトリを接続する。
-3. `main`へのpushを本番公開のトリガーにする。
-4. 機能追加やデザイン変更はブランチを作成し、Pull Requestで確認する。
-5. Pull RequestごとにCloudflare PagesのプレビューURLで実機確認する。
-6. `main`へマージ後、本番URLで表示・リンク・モバイル表示を確認する。
+2. GitHubの`develop`ブランチを統合・検証用ブランチにする。
+3. GitHubのデフォルトブランチと通常のPull Requestのbaseを`develop`にする。
+4. `main`と`develop`への直接pushを禁止し、Branch protectionを設定する。
+5. 作業は`develop`から`feature/*`、`fix/*`、`docs/*`などのブランチを作成して行う。
+6. 作業ブランチから`develop`へPull Requestを作成し、Preview URLと必須チェックを確認する。
+7. リリース時は`develop`から`main`へPull Requestを作成する。
+8. `main`へのマージを本番デプロイのトリガーにする。
+9. 本番デプロイ後に、本番URL、リンク、モバイル表示を確認する。
+
+Cloudflare PagesではProduction branchを`main`に設定する。Preview branchは`develop`と作業ブランチを対象にする。本番デプロイとPreviewデプロイの設定基準は[ADR 0004](adr/0004-branching-and-deployment-strategy.md)を参照する。
 
 ## 初回デプロイ手順
 
@@ -69,7 +102,8 @@ GitHub repository
    | Root directory | 空欄（リポジトリ直下） |
 
    `index.html`がリポジトリ直下にある構成のため、ビルドは不要である。将来Viteなどを導入したら、出力先（例: `dist`）を指定し、ローカルでも同じビルドコマンドが成功することを確認する。
-6. **Save and Deploy** を選び、完了後に`https://<project-name>.pages.dev`で初回公開を確認する。
+6. Preview branchの対象を`develop`および必要な作業ブランチに設定する。
+7. **Save and Deploy** を選び、完了後に`https://<project-name>.pages.dev`で初回公開を確認する。
 
 Git連携を選んだPagesプロジェクトは、後からDirect Upload方式へ切り替えられない。通常の運用では問題ないため、このポートフォリオではGit連携を継続する。
 
@@ -89,11 +123,13 @@ Git連携を選んだPagesプロジェクトは、後からDirect Upload方式�
 
 ### 日常の公開フロー
 
-1. `main`から作業ブランチを作り、変更をcommitしてGitHubへpushする。
-2. Pull Requestを作成する。Cloudflare Pagesはブランチ／PRごとにプレビューURLとGitHubのデプロイステータスを作成する。
-3. プレビューURLで表示、リンク、スマートフォン幅のレイアウトを確認する。
-4. Pull Requestを`main`へマージする。Pagesが本番デプロイを開始する。
-5. Pagesの **Deployments** で対象commitが成功していることを確認し、`https://example.com`で公開確認を行う。
+1. `develop`から作業ブランチを作り、変更をcommitしてGitHubへpushする。
+2. 作業ブランチから`develop`へのPull Requestを作成する。Cloudflare Pagesはブランチ／PRごとにPreview URLとGitHubのデプロイステータスを作成する。
+3. Preview URLで表示、リンク、スマートフォン幅のレイアウトを確認する。
+4. `develop`へマージし、統合状態を確認する。
+5. リリース時に`develop`から`main`へのPull Requestを作成する。
+6. `main`へマージするとPagesが本番デプロイを開始する。
+7. Pagesの **Deployments** で対象commitが成功したことを確認し、`https://example.com`で公開確認を行う。
 
 失敗時はPagesのデプロイ詳細にあるBuild logを最初に確認する。現在はビルドコマンドがないため、主な確認対象はリポジトリ直下に`index.html`があることと、参照するCSS・JavaScript・画像のパスである。
 
@@ -115,7 +151,7 @@ Pagesプロジェクトの **Metrics** で **Web Analytics** を有効にする�
 ## 運用上の注意
 
 - APIキー、トークン、個人情報をリポジトリへcommitしない。将来ビルド時の設定値が必要になった場合は、Pagesの **Settings** → **Environment variables** で管理する。
-- `main`以外へのpushも既定ではプレビューを発行する。公開したくない検証ブランチは、PagesのGit設定で自動デプロイ対象を見直す。
+- `main`以外へのpushはPreviewデプロイの対象になり得る。不要なブランチを自動デプロイしたくない場合は、PagesのBranch controlで対象を`develop`と必要な作業ブランチに絞る。
 - 大きな画像・動画を追加する前に、ローカル表示とモバイル回線相当での読み込みを確認する。
 
 ## 情報の確認元
@@ -123,6 +159,8 @@ Pagesプロジェクトの **Metrics** で **Web Analytics** を有効にする�
 以下は2026-07-22に確認したCloudflare公式ドキュメントである。CloudflareのUIや設定項目は変わり得るため、実施時にもリンク先を参照する。
 
 - [Cloudflare Pages: Git integration](https://developers.cloudflare.com/pages/get-started/git-integration/)
+- [Cloudflare Pages: GitHub integration](https://developers.cloudflare.com/pages/configuration/git-integration/github-integration/)
+- [Cloudflare Pages: Branch deployment controls](https://developers.cloudflare.com/pages/configuration/branch-build-controls/)
 - [Cloudflare Pages: Custom domains](https://developers.cloudflare.com/pages/configuration/custom-domains/)
 - [Cloudflare Pages: Redirecting www to domain apex](https://developers.cloudflare.com/pages/how-to/www-redirect/)
 - [Cloudflare Pages: Redirects](https://developers.cloudflare.com/pages/configuration/redirects/)

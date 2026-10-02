@@ -38,7 +38,7 @@ git の操作に入る前に、まず現在のリポジトリ状態を確認す�
 バックエンドに変更がある場合、コミット前に以下を検討・実行する。
 
 - **`make fmt`**: `backend/` 配下の Go ファイルに変更がある場合は原則実行する（リポジトリルートで実行）。
-- **`make generate-code`**: Swagger 注釈や API 定義に影響しそうな変更（例: `backend/cmd/server`、`backend/internal/handler`、`backend/internal/usecase`、`backend/internal/domain`、`backend/docs` など）が含まれる場合は実行する（リポジトリルートで実行）。  
+- **`make generate-code`**: Swagger 注釈や API 定義に影響しそうな変更（例: `backend/cmd/server`、`backend/internal/handler`、`backend/internal/usecase`、`backend/internal/domain`、`backend/docs` など）が含まれる場合は実行する（リポジトリルートで実行）。
   生成物の差分が出たら、関連するコミットに含める。
 
 迷った場合は実行を優先し、生成物の差分がないことを確認する。
@@ -71,7 +71,15 @@ git の操作に入る前に、まず現在のリポジトリ状態を確認す�
 
 ## ブランチ戦略
 
-作業は必ずフィーチャーブランチで行う。**main ブランチへの直接 push は絶対に行わない。**
+作業は必ず`develop`から作成したフィーチャーブランチで行う。**main / develop ブランチへの直接 push は絶対に行わない。**
+
+ブランチの役割は次のとおり。
+
+- `main`: 本番専用。`develop`からのリリースPRだけをマージする。
+- `develop`: 統合・検証用。フィーチャーブランチからのPRをマージする。
+- `feat/*`、`fix/*`、`docs/*`など: 作業用。
+
+通常のPull Requestのbaseは`develop`とし、リリース時だけ`develop`から`main`へPull Requestを作成する。
 
 ### ブランチの確認とチェックアウト
 
@@ -81,11 +89,13 @@ git の操作に入る前に、まず現在のリポジトリ状態を確認す�
 git branch --show-current
 ```
 
-- **main 以外のブランチにいる場合**: そのまま作業を続ける。
-- **main ブランチにいる場合**: 必ず新しいブランチを作成してからコミットする。
+- **作業ブランチにいる場合**: そのまま作業を続ける。
+- **main または develop ブランチにいる場合**: developを基点に新しい作業ブランチを作成してからコミットする。
 
 ```bash
-git checkout -b <type>/<description>
+git switch develop
+git pull --ff-only origin develop
+git switch -c <type>/<description>
 ```
 
 ### ブランチ名の形式
@@ -107,13 +117,13 @@ git checkout -b <type>/<description>
 
 ### push のルール
 
-push は**現在作業中のフィーチャーブランチのみ**を対象とする。main ブランチには絶対に push しない。
+push は**現在作業中のフィーチャーブランチのみ**を対象とする。main / develop ブランチには絶対に push しない。
 
 ```bash
 # 正しい例: フィーチャーブランチへの push
 git push -u origin "$(git branch --show-current)"
 
-# 禁止: main への直接 push は行わない
+# 禁止: main / develop への直接 push は行わない
 ```
 
 ## Git コマンドの実行
