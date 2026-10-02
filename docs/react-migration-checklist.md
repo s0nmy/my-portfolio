@@ -28,9 +28,9 @@ PC・スマートフォンの目視比較とキーボード操作の実機確認
 ## 初回公開手順
 
 1. ローカルで `npm ci`、`npm run lint`、`npm run typecheck`、`npm run build` を実行する。
-2. Workers BuildsのBuild commandを `npm run build`、Deploy commandを `npx wrangler deploy`、Production branchを `main` にする。Root directoryはリポジトリ直下（画面上では `/`）。Preview buildsを有効にし、非本番ブランチの実際の配信動作を設定画面で確認する。Preview command欄がない場合は、現行WorkerのPreview方式を確認してから変更する。
+2. Workers BuildsのBuild commandを `npm run build`、Deploy commandを `npx wrangler deploy`、Production branchを `main` にする。Root directoryはリポジトリ直下（画面上では `/`）。Preview buildsを有効にする。このWorkerの画面では非本番ブランチ向けの欄が **Version command** と表示されるため、`npx wrangler versions upload` にする。`npx wrangler deploy` をVersion commandに設定しない。
    - `assets.directory` の `./out` が存在しないというエラーが出た場合、Wrangler実行時に静的出力がない。ビルドログで `npm run build` が実行・成功したか、`next build` が `out` を生成したか、作業ディレクトリがリポジトリ直下かを順に確認する。Wrangler設定内のカスタムbuild設定だけではWorkers BuildsのBuild commandを代用できない。
-   - Workers Buildsにはproductionブランチ用と非productionブランチ用のtriggerがあり、それぞれbuild commandを持てる。作業ブランチのビルドで `out` がない場合は、非production側のbuild commandも `npm run build` になっているか確認する。Preview commandが表示されない旧方式では、非production branch deploy commandの設定を確認する。`npx wrangler deploy`を作業ブランチ向けのコマンドに設定しない。
+   - Workers Buildsにはproductionブランチ用と非productionブランチ用のtriggerがあり、それぞれbuild commandを持てる。作業ブランチのビルドで `out` がない場合は、ログに `Executing user build command: npm run build` があるか確認する。存在しなければ非production側triggerのbuild commandが適用されていない。
 3. 作業ブランチから `develop` へのPRでPreview URLを開き、`/` と存在しないURLの応答、全セクション、外部リンク、画像、PC幅とスマートフォン幅、キーボード操作、動きを減らす設定を確認する。
 4. `develop` に統合した後、`develop → main` のPRを作成する。Previewと `quality-gate` を再確認してからマージする。
 5. 本番でHTTPS、正規URL、wwwリダイレクト、画像と外部リンクを確認する。問題があれば記録した旧deploymentに戻す。
