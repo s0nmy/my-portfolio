@@ -3,23 +3,29 @@
 import { useEffect, useState } from "react";
 
 export function Header() {
-  const [isHeroVisible, setHeroVisible] = useState(true);
+  const [isHeaderVisible, setHeaderVisible] = useState(false);
 
   useEffect(() => {
-    const hero = document.querySelector(".hero");
-    if (!hero) return;
+    const hero = document.getElementById("hero");
+    if (!hero) {
+      setHeaderVisible(true);
+      return;
+    }
 
-    const observer = new IntersectionObserver(([entry]) => setHeroVisible(entry.isIntersecting), {
-      rootMargin: "-64px 0px 0px 0px",
-    });
+    const observer = new IntersectionObserver(
+      ([entry]) => setHeaderVisible(!entry.isIntersecting),
+      { rootMargin: "0px", threshold: 0 },
+    );
     observer.observe(hero);
     return () => observer.disconnect();
   }, []);
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 bg-white/95 backdrop-blur-[10px] transition-all duration-300 motion-reduce:transition-none ${
-        isHeroVisible ? "invisible pointer-events-none -translate-y-full opacity-0" : "bg-white/[0.98]"
+      className={`fixed inset-x-0 top-0 z-[1000] bg-white/[0.98] backdrop-blur-[10px] transition-all duration-300 motion-reduce:transition-none ${
+        isHeaderVisible
+          ? "visible translate-y-0 opacity-100 pointer-events-auto"
+          : "invisible -translate-y-full opacity-0 pointer-events-none"
       }`}
     >
       <div className="mx-auto flex max-w-[1400px] items-center justify-between px-8 py-4 max-[768px]:flex-col max-[768px]:gap-4 max-[768px]:px-4">

@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 
 export function Hero() {
   return (
-    <section className="relative z-[1] isolate flex h-screen min-h-[640px] items-center justify-center overflow-hidden bg-[linear-gradient(135deg,var(--color-primary-light)_0%,var(--color-primary)_48%,var(--color-primary-dark)_100%)] max-[768px]:min-h-[560px]">
+    <section id="hero" className="relative z-[1] isolate flex h-screen min-h-[640px] items-center justify-center overflow-hidden bg-[linear-gradient(135deg,var(--color-primary-light)_0%,var(--color-primary)_48%,var(--color-primary-dark)_100%)] max-[768px]:min-h-[560px]">
       <div className="hero-overlay" aria-hidden="true" />
       <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
         <span className="hero-star hero-star-large" style={{ "--x": "12%", "--y": "21%", "--delay": "0s" } as CSSProperties} />
