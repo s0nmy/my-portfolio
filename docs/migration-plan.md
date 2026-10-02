@@ -1,5 +1,7 @@
 # 技術構成の移行計画
 
+> 実装順の更新（2026-10-02）: 初回公開は現行トップページの再現後に行う。下記の旧Phase 2・3にある作品詳細ページと作品ごとのSEOは次のリリースに分ける。静的出力を `out` から既存Workerで配信し、Previewで確認してから `develop → main` で公開する。現行のBuild／Preview設定と復旧用deployment IDはCloudflare管理画面で公開前に記録する。実際の切り替え手順は[React移行の確認記録](react-migration-checklist.md)を参照する。
+
 ## 目的
 
 現在の静的なHTML / CSS / JavaScriptサイトを、Next.js / Reactを中心とした構成へ移行する。将来的には、プロジェクトや活動実績を管理画面から追加できる構成へ拡張する。

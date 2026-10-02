@@ -29,13 +29,13 @@ function ProjectCard({ project }: { project: Project }) {
   );
 
   return (
-    <article className="gallery-item" onMouseEnter={() => setActive(true)} onMouseLeave={() => { setActive(false); setIndex(0); }} onFocus={() => setActive(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) { setActive(false); setIndex(0); } }}>
+    <article className="gallery-item" onMouseEnter={() => setActive(true)} onMouseLeave={() => { setActive(false); setIndex(0); }}>
       <div className="gallery-placeholder">
         {project.href ? <a className="gallery-picture-link" href={project.href} target="_blank" rel="noopener noreferrer" aria-label={`${project.title} のリポジトリを開く`}>{picture}</a> : picture}
         {project.images.length > 1 && (
           <>
             <span className="gallery-image-count" aria-live="polite">{index + 1} / {project.images.length}</span>
-            <div className="gallery-controls" aria-label={`${project.title} の画像切り替え`}>
+            <div className="gallery-controls" role="group" aria-label={`${project.title} の画像切り替え`}>
               <button type="button" onClick={() => setIndex((current) => (current - 1 + project.images.length) % project.images.length)} aria-label="前の画像">‹</button>
               <button type="button" onClick={() => setIndex((current) => (current + 1) % project.images.length)} aria-label="次の画像">›</button>
             </div>
