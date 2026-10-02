@@ -4,7 +4,7 @@
 
 ## 公開
 
-Cloudflare PagesでGitHubの`main`ブランチを公開します。設定手順は[アーキテクチャ](docs/architecture.md)を参照してください。
+Cloudflare Workers BuildsでGitHubの`main`ブランチを本番デプロイします。設定手順は[アーキテクチャ](docs/architecture.md)を参照してください。
 
 ## 設計・移行ドキュメント
 

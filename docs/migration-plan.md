@@ -12,14 +12,15 @@
 Cloudflare Registrar
   └─ Cloudflare DNS
        └─ 正規ドメイン
-            └─ Next.js application
-                 ├─ 公開ページ
-                 ├─ プロジェクト詳細
-                 ├─ 将来の管理画面
-                 └─ 将来のDB / Storage
+            └─ Cloudflare Worker (Workers Builds)
+                 └─ Next.js application
+                      ├─ 公開ページ
+                      ├─ プロジェクト詳細
+                      ├─ 将来の管理画面
+                      └─ 将来のDB / Storage
 ```
 
-初期のNext.jsアプリはCloudflare Pagesの静的出力で公開する。DBや管理画面を追加し、即時反映・サーバー処理が必要になった時点で、Cloudflare WorkersまたはVercelへの移行を判断する。判断は[ADR 0003](adr/0003-cloudflare-domain-and-runtime.md)に従う。
+初期のNext.jsアプリは既存のCloudflare Workerへデプロイする。Next.jsの出力・実行方式は移行時にPreviewで検証する。DBや管理画面を追加した後に別の実行基盤が必要になった場合は、[ADR 0003](adr/0003-cloudflare-domain-and-runtime.md)に従って再評価する。
 
 ## Phase 0: 現状固定と移行準備
 
@@ -29,7 +30,7 @@ Cloudflare Registrar
 - 既存のURL、外部リンク、画像、動画、SNSリンクを一覧化する。
 - プロジェクト、スキル、活動実績をデータ項目として整理する。
 - 既存の未コミット変更を確認し、React化の変更と混ぜない。
-- 公開中のCloudflare PagesデプロイとDNSレコードを記録する。
+- 公開中のWorker deployment、Workers Buildsのコマンド・branch control、DNSレコードを記録する。
 - `develop`を統合ブランチ、`main`を本番デプロイブランチとする運用を決める。
 
 ### 完了条件
@@ -51,9 +52,9 @@ Phase 1のReact化を始める前に、コード変更を安全に検証・公�
 - 作業ブランチから`develop`へのPull Requestを標準にする。
 - リリース時は`develop`から`main`へPull Requestを作成する。
 - `main`と`develop`への直接pushを禁止し、必須チェックを設定する。
-- Cloudflare PagesのProduction branchを`main`にする。
-- Cloudflare PagesのPreview branchを`develop`および必要な作業ブランチにする。
-- 小さなドキュメント変更でPreviewデプロイと`main`マージ後の本番デプロイを確認する。
+- `.github/workflows/branch-gate.yml`の`quality-gate`を両ブランチの必須チェックにし、`main`向けPRでは`release-source`も必須にする。
+- Cloudflare Workers BuildsのProduction branchを`main`に固定し、Preview buildsを有効にする。
+- 小さなドキュメント変更でPreview buildと`main`マージ後の本番buildを確認する。
 
 ### 完了条件
 
@@ -62,7 +63,8 @@ Phase 1のReact化を始める前に、コード変更を安全に検証・公�
 - `develop`へのマージでは本番ドメインが変わらない。
 - `main`へのマージでProduction deploymentが開始される。
 - `main`への直接pushが拒否される。
-- 旧Cloudflare Pagesデプロイへ戻す手順が分かる。
+- `develop`以外から`main`へPRを作成してもrequired checkが失敗する。
+- 既存Worker deploymentへ戻す手順が分かる。
 
 この段階を終えてからPhase 1のNext.js / React導入を開始する。判断の詳細は[ADR 0004](adr/0004-branching-and-deployment-strategy.md)に記録する。
 
@@ -114,14 +116,14 @@ Phase 1のReact化を始める前に、コード変更を安全に検証・公�
 - キーボードのみでも主要な操作ができる。
 - 主要なページで画像や外部リンクのエラーがない。
 
-## Phase 4: Cloudflare Pagesへ移行後の公開確認
+## Phase 4: Cloudflare Workerへ移行後の公開確認
 
 ### 作業
 
-- Next.jsの静的出力をPreview環境へデプロイする。
-- 現在の独自ドメインは変更せず、PagesのPreview URLで確認する。
+- Next.jsの出力・実行方式をWorkerのPreview環境へデプロイする。
+- 現在の独自ドメインは変更せず、WorkerのPreview URLで確認する。
 - 本番切り替え前にビルド成果物、画像パス、404、モバイル表示を確認する。
-- 本番切り替えは、既存Pagesへ戻せる状態で行う。
+- 本番切り替えは、既存Worker deploymentへ戻せる状態で行う。
 
 ### 完了条件
 
@@ -163,7 +165,7 @@ Cloudflare中心の構成を優先する場合は、D1 / R2 / Workersを比較�
 
 ## Phase 7: 実行基盤の見直し
 
-次の条件に該当した場合だけ、Pages静的出力からWorkersまたはVercelへの移行を検討する。
+次の条件に該当した場合だけ、既存Workerの実行方式から別のWorkers構成またはVercelへの移行を検討する。
 
 - DB更新を即時に公開したい。
 - Server Actions、Route Handlers、SSR、ISRなどが必要になった。
@@ -190,7 +192,7 @@ Cloudflare中心の構成を優先する場合は、D1 / R2 / Workersを比較�
 
 - React化中は現在の静的サイトを公開可能な状態で保持する。
 - `develop`と`main`のBranch protectionを解除して緊急対応しない。例外時は理由と事後同期を記録する。
-- 既存のCloudflare Pagesデプロイを削除しない。
+- 現在のWorker deploymentを削除しない。
 - 本番DNSの変更は最後に行う。
 - DB導入時は、導入前のTypeScript/JSONデータをリポジトリに残す。
 - 実行基盤を移す場合は、旧環境を確認できる期間を設ける。

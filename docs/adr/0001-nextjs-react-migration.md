@@ -14,7 +14,7 @@
 
 1. フロントエンドをNext.jsのApp Router、React、TypeScriptへ段階的に移行する。
 2. 初期移行では既存のCSSと画像をできるだけ再利用する。Tailwind CSSへの全面移行はReact化と分離する。
-3. 静的な公開ページを優先し、初期の公開先はCloudflare Pagesを継続する。
+3. 静的な公開ページを優先し、初期の公開先は既存のCloudflare Workerを継続する。Next.jsの出力・実行方式はReact移行時にWorker上で検証する。
 4. HTMLのセクションをReactコンポーネントへ分割し、コンテンツは表示コンポーネントから分離する。
 5. DOMイベント中心の処理は、必要な箇所だけClient Componentへ移し、純粋な表示はServer Componentまたは静的生成を優先する。
 6. DB・管理画面はReact化と同時には導入せず、必要性を確認した後の別段階とする。
@@ -45,13 +45,12 @@ Reactの学習・部品化には適している。しかし、将来的にサー
 ### Negative
 
 - Node.js、パッケージ管理、ビルドが必要になる。
-- Cloudflare Pagesの静的出力と、将来のサーバー実行の違いを管理する必要がある。
+- Cloudflare Workers上で使うNext.js機能と、その実行方式の互換性を管理する必要がある。
 - 既存のCSSを再利用するため、初期段階ではCSS設計の改善が別課題として残る。
 
 ## Exit criteria
 
 - 既存の主要セクションがReactコンポーネントとして表示される。
 - 主要な見た目、外部リンク、画像・動画表示、レスポンシブ表示が維持される。
-- React化後のビルドとCloudflare Pagesのプレビュー確認が成功する。
+- React化後のビルドとCloudflare Workerのプレビュー確認が成功する。
 - 既存HTMLを直接編集しなくても、データ定義を変更してプロジェクトを増やせる。
-
