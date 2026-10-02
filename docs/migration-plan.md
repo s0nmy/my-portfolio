@@ -1,10 +1,10 @@
 # 技術構成の移行計画
 
-> 実装順の更新（2026-10-02）: 初回公開は現行トップページの再現後に行う。下記の旧Phase 2・3にある作品詳細ページと作品ごとのSEOは次のリリースに分ける。静的出力を `out` から既存Workerで配信し、Previewで確認してから `develop → main` で公開する。現行のBuild／Preview設定と復旧用deployment IDはCloudflare管理画面で公開前に記録する。実際の切り替え手順は[React移行の確認記録](react-migration-checklist.md)を参照する。
+> 実装状況（2026-10-02）: Next.js / React / TypeScriptでトップページを実装し、静的出力を`out`へ生成する。作品詳細ページと作品別SEOは次のリリースに分ける。ローカルのlint、型チェック、build、Wrangler previewは確認済み。Cloudflare上のPreview・本番確認と実機確認は未完了で、切り替え前にBuild／Preview設定と復旧用deployment IDを記録する。手順は[React移行の確認記録](react-migration-checklist.md)を参照する。
 
 ## 目的
 
-現在の静的なHTML / CSS / JavaScriptサイトを、Next.js / Reactを中心とした構成へ移行する。将来的には、プロジェクトや活動実績を管理画面から追加できる構成へ拡張する。
+Next.js / React / TypeScriptの静的サイトをCloudflare Workerから配信する。初回移行の実装は完了し、今後は作品詳細ページ、SEO、アクセシビリティ、コンテンツ管理の必要性を段階的に検討する。移行前のHTML / CSS / JavaScriptは`legacy/static-site/`に比較用として保管している。
 
 この計画では、ドメイン停止、既存デザインの意図しない破壊、不要なDB導入を避けながら段階的に移行する。
 
@@ -15,14 +15,14 @@ Cloudflare Registrar
   └─ Cloudflare DNS
        └─ 正規ドメイン
             └─ Cloudflare Worker (Workers Builds)
-                 └─ Next.js application
+                 └─ Next.js static export (`out/`)
                       ├─ 公開ページ
                       ├─ プロジェクト詳細
                       ├─ 将来の管理画面
                       └─ 将来のDB / Storage
 ```
 
-初期のNext.jsアプリは既存のCloudflare Workerへデプロイする。Next.jsの出力・実行方式は移行時にPreviewで検証する。DBや管理画面を追加した後に別の実行基盤が必要になった場合は、[ADR 0003](adr/0003-cloudflare-domain-and-runtime.md)に従って再評価する。
+Next.jsは静的出力を`out/`へ生成し、既存のCloudflare Workerから配信する構成にした。Cloudflare上のPreviewと本番での確認は未完了。SSRなど別の実行方式が必要になった場合は、[ADR 0003](adr/0003-cloudflare-domain-and-runtime.md)に従って再評価する。
 
 ## Phase 0: 現状固定と移行準備
 
@@ -41,9 +41,9 @@ Cloudflare Registrar
 - 既存コンテンツの欠落を検出できる一覧がある。
 - 本番DNSを変更せずに作業できる。
 
-## Phase 0.5: ブランチ・デプロイ基盤を確立する
+## Phase 0.5: ブランチ・デプロイ基盤を確立する（一部確認待ち）
 
-Phase 1のReact化を始める前に、コード変更を安全に検証・公開できる流れを作る。
+ブランチ戦略とGitHub Actionsのゲートはリポジトリに設定済み。Cloudflare Workers BuildsのPreviewと本番の実動作確認は未完了で、Phase 4で確認する。
 
 ### 作業
 
@@ -68,9 +68,9 @@ Phase 1のReact化を始める前に、コード変更を安全に検証・公�
 - `develop`以外から`main`へPRを作成してもrequired checkが失敗する。
 - 既存Worker deploymentへ戻す手順が分かる。
 
-この段階を終えてからPhase 1のNext.js / React導入を開始する。判断の詳細は[ADR 0004](adr/0004-branching-and-deployment-strategy.md)に記録する。
+ブランチ戦略の判断は[ADR 0004](adr/0004-branching-and-deployment-strategy.md)に記録する。
 
-## Phase 1: Next.js / Reactの土台を作る
+## Phase 1: Next.js / Reactの土台を作る（完了）
 
 ### 作業
 
@@ -87,7 +87,9 @@ Phase 1のReact化を始める前に、コード変更を安全に検証・公�
 - スクロール演出、画像ギャラリー、動画の再生方針が確認できる。
 - `npm run build`が成功する。
 
-## Phase 2: コンテンツと表示を分離する
+## Phase 2: コンテンツと表示を分離する（一部完了）
+
+プロジェクト情報は`app/content/projects.ts`へ分離済み。スキルと活動実績は現在コンポーネント内にあり、データ編集の負担が生じた時点で追加分離する。
 
 ### 作業
 
@@ -118,11 +120,11 @@ Phase 1のReact化を始める前に、コード変更を安全に検証・公�
 - キーボードのみでも主要な操作ができる。
 - 主要なページで画像や外部リンクのエラーがない。
 
-## Phase 4: Cloudflare Workerへ移行後の公開確認
+## Phase 4: Cloudflare Workerへの公開確認（未完了）
 
 ### 作業
 
-- Next.jsの出力・実行方式をWorkerのPreview環境へデプロイする。
+- `out/`の静的出力をWorkerのPreview環境へデプロイする。
 - 現在の独自ドメインは変更せず、WorkerのPreview URLで確認する。
 - 本番切り替え前にビルド成果物、画像パス、404、モバイル表示を確認する。
 - 本番切り替えは、既存Worker deploymentへ戻せる状態で行う。
@@ -192,7 +194,7 @@ Cloudflare中心の構成を優先する場合は、D1 / R2 / Workersを比較�
 
 ## Rollback policy
 
-- React化中は現在の静的サイトを公開可能な状態で保持する。
+- 移行前のソースは`legacy/static-site/`に比較用として保持し、画像とfaviconは`public/`のアセットを共有する。旧版への復旧にはGit履歴またはCloudflareの過去のdeploymentを使う。
 - `develop`と`main`のBranch protectionを解除して緊急対応しない。例外時は理由と事後同期を記録する。
 - 現在のWorker deploymentを削除しない。
 - 本番DNSの変更は最後に行う。

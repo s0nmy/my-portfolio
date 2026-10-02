@@ -2,11 +2,12 @@
 
 ## 現行ソースの基準
 
-- 比較対象: `src/index.html`、`src/style.css`、`src/script.js`（React移行前のまま保持）。
+- 比較対象: `legacy/static-site/index.html`、`legacy/static-site/style.css`、`legacy/static-site/script.js`（移行前の表示を比較するために保持）。
+- 旧HTMLの画像とfaviconは`../../public/`を参照し、アセット本体は`public/`だけに置く。
 - セクション: ヒーロー、プロフィール、スキル、プロジェクト4件、活動5件とSNSリンク、フッター。
 - 外部リンク: GitHubプロフィール、note、X、ChronoMe、すれック、Kuguri。フッターにはメールリンクもある。
 - 画像: ChronoMe 3枚、すれック2枚、Kuguri 1枚、SparkDay 1枚。旧HTMLの `images/hackathon/02_hachathon.mp4` はリポジトリにないため移行先に登録しない。
-- 画面幅、文章、リンク、画像の目視比較には現行本番のPCとスマートフォンのスクリーンショットが必要。現時点ではリポジトリ内のソースを比較基準とする。
+- 画面幅、文章、リンク、画像の目視比較には現行本番のPCとスマートフォンのスクリーンショットが必要。現時点ではリポジトリ内のソースを比較基準とする。`legacy/static-site`は比較用で、旧版への復旧はGit履歴またはCloudflareの過去のdeploymentを使う。
 
 ## Cloudflareで本番切り替え前に記録する値
 
