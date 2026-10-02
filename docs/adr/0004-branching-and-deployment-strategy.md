@@ -2,13 +2,13 @@
 
 - Status: Accepted
 - Date: 2026-10-02
-- Scope: Gitブランチ、Pull Request、Cloudflare Pagesのデプロイ
+- Scope: Gitブランチ、Pull Request、Cloudflare Workers Buildsのデプロイ
 
 ## Context
 
 これまでは`main`を本番ブランチとして扱い、作業ブランチから`main`へPull Requestを作成する運用を想定していた。今後はReact化、Next.js化、将来のDB導入など、途中状態が長く続く変更が増える。
 
-移行途中のコードを本番へ直接混ぜず、統合・確認を行う場所を明確にする必要がある。また、Cloudflare Pagesでは本番ブランチとプレビューブランチを分けられるため、Gitの流れとデプロイ環境を対応させる。
+移行途中のコードを本番へ直接混ぜず、統合・確認を行う場所を明確にする必要がある。また、Cloudflare Workers Buildsではproduction branchとnon-production branch buildsを分けられるため、Gitの流れとデプロイ環境を対応させる。
 
 ## Decision
 
@@ -37,7 +37,7 @@ main     ── 本番専用
 - GitHubリポジトリの通常のデフォルトブランチおよび通常のPull Requestのbaseブランチとする。
 - `feature/*`などからPull Requestを作成する。
 - 直接pushを原則禁止し、レビューとチェックを通してマージする。
-- Cloudflare Pagesではプレビュー環境として確認する。
+- Cloudflare Workers BuildsではPreviewとして確認する。
 
 ### 作業ブランチ
 
@@ -47,19 +47,21 @@ main     ── 本番専用
 
 ## Deployment behavior
 
-Cloudflare Pagesの設定は次のようにする。
+Cloudflare Workers Buildsの設定は次のようにする。
 
 | 設定 | 方針 |
 | --- | --- |
 | Production branch | `main` |
 | Production deployment | 有効 |
-| Preview deployment | `develop`および作業ブランチで有効 |
+| Preview builds | 有効。`develop`および作業ブランチの更新でPreviewを生成 |
 | 本番ドメイン | `main`のデプロイだけに関連付ける |
 | Preview URL | PRまたはブランチ単位で利用する |
 
 `feature/* → develop`のPull RequestではPreview URLとチェックを確認する。`develop → main`のPull Requestをマージすると、`main`へのpushとして本番デプロイが開始される。
 
-ただし、Cloudflare PagesのGit連携は本番ブランチへのコミットをトリガーにするため、GitHub側で`main`への直接pushを禁止することが前提になる。Cloudflare Pages側ではProduction branchを`main`に設定し、Preview branchの対象を設定する。
+GitHub側で`main`への直接pushと、`develop`以外を送信元とするPRを禁止する。Cloudflare Workers Buildsではproduction branchを`main`に設定し、non-production branch buildsを有効にする。プレビューコマンドは現行Workerの設定を確認して維持する。
+
+GitHub Actionsの`quality-gate`を`develop`と`main`の必須チェックにする。`main`向けPRでは`release-source`も必須とし、同一リポジトリの`develop`からのPRだけを通す。人による承認数は0とする。
 
 ## Release flow
 
@@ -98,7 +100,7 @@ Cloudflare Pagesの設定は次のようにする。
 
 - `develop`から`main`へのリリースPull Requestが1つ増える。
 - `develop`が壊れた場合、後続の作業も影響を受ける。
-- GitHubのBranch protectionとCloudflare PagesのBranch controlを初回に設定する必要がある。
+- GitHubのBranch protectionとCloudflare Workers BuildsのBranch controlを初回に設定する必要がある。
 
 ## Supersession
 

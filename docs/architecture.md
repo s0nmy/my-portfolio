@@ -7,8 +7,7 @@ MVPでは作品紹介・プロフィール・外部SNSへの導線を提供す�
 
 ## 現在の方針（2026-10-02）
 
-現在は静的なHTML / CSS / JavaScriptサイトだが、Next.js / Reactへ段階的に移行する。
-Cloudflare Registrarで取得したドメインとCloudflare DNSは維持し、初期のNext.js公開先もCloudflare Pagesを継続する。
+現在は静的なHTML / CSS / JavaScriptサイトで、GitHub上にはCloudflare Workers Buildsによる`my-portfolio`のproduction build履歴がある。Next.js / Reactへ段階的に移行し、既存WorkerとCloudflare Registrar / DNSを継続する。
 
 DBや管理画面はReact化と同時には導入しない。まずコンテンツと表示を分離し、ブラウザからの編集、画像アップロード、即時公開などの需要が明確になった時点でDB導入を判断する。
 
@@ -27,7 +26,7 @@ DBや管理画面はReact化と同時には導入しない。まずコンテン�
 | フロントエンド | HTML / CSS / JavaScript | Next.js / React / TypeScript | 継続 |
 | コンテンツ | HTMLへ直書き | TypeScriptまたはJSONへ分離 | SupabaseなどのDB |
 | 画像・動画 | リポジトリ内 | `public/images`などへ整理 | Supabase Storage / Cloudflare R2 |
-| ホスティング | Cloudflare Pages | Cloudflare Pagesの静的出力 | Cloudflare WorkersまたはVercel |
+| ホスティング | Cloudflare Workers | 既存Worker上でNext.jsの出力・実行方式を検証 | Worker継続、または必要時にVercel等を評価 |
 | ドメイン・DNS | Cloudflare Registrar / DNS | 継続 | 継続 |
 | 管理画面 | なし | なし | Next.js `/admin` |
 | 認証 | なし | なし | Supabase Authまたは別の認証基盤 |
@@ -38,7 +37,7 @@ DBや管理画面はReact化と同時には導入しない。まずコンテン�
 GitHub repository
   └─ feature/* → develop（Preview）
       └─ develop → main（Production）
-          └─ Cloudflare Pages
+          └─ Workers Builds → Cloudflare Worker
               └─ Cloudflare DNS + 独自ドメイン
                   └─ 訪問者
 ```
@@ -46,7 +45,8 @@ GitHub repository
 | 領域 | 採用するもの | 役割 |
 | --- | --- | --- |
 | ドメイン・DNS | Cloudflare Registrar / DNS | ドメインの取得と名前解決 |
-| ホスティング | Cloudflare Pages | 静的サイトのビルド・配信・SSL |
+| ホスティング | Cloudflare Workers | サイトを実行・配信 |
+| デプロイ | Cloudflare Workers Builds | `main`から本番デプロイし、他ブランチはPreviewとして確認 |
 | ソース管理 | GitHub | ソースコードと変更履歴の管理 |
 | フロントエンド | HTML / CSS / JavaScript | サンプルを出発点にして実装 |
 | アクセス解析 | Cloudflare Web Analytics | Cookieバナーなしで基本的な閲覧状況を確認 |
@@ -55,7 +55,7 @@ GitHub repository
 
 - `example.com` を正規URLとする。
 - `www.example.com` は `example.com` へリダイレクトする。
-- Pagesプロジェクトには `example.com` と `www.example.com` を関連付ける。
+- 公開ホスト名はCloudflare DNSとWorkerのCustom Domain設定で管理する。
 - HTTPSはCloudflareで有効化し、常にHTTPSを利用する。
 
 実際のドメイン名が決まるまでは、設定値やURLをリポジトリに固定で書かない。
@@ -72,66 +72,31 @@ GitHub repository
 8. `main`へのマージを本番デプロイのトリガーにする。
 9. 本番デプロイ後に、本番URL、リンク、モバイル表示を確認する。
 
-Cloudflare PagesではProduction branchを`main`に設定する。Preview branchは`develop`と作業ブランチを対象にする。本番デプロイとPreviewデプロイの設定基準は[ADR 0004](adr/0004-branching-and-deployment-strategy.md)を参照する。
+Cloudflare Workers Buildsではproduction branchを`main`に設定し、Preview buildsを有効にする。ブランチ制御とPRの必須チェックは[ADR 0004](adr/0004-branching-and-deployment-strategy.md)を参照する。
 
-## 初回デプロイ手順
+## Cloudflare Workers Buildsの設定
 
-以下は、静的なHTML / CSS / JavaScriptで実装する現在のMVPを前提とする。
-フレームワークやビルド工程を追加した場合は、手順4のビルド設定だけをその構成に合わせて変更する。
+GitHubの本番コミットにはWorkers Buildsの成功チェックがあり、Worker名は`my-portfolio`である。GitHub側のbranch controlは次のようにする。
 
-### 事前準備
+1. Cloudflareダッシュボードで **Workers & Pages** → **my-portfolio** → **Settings** → **Build** → **Branch control** を開く。
+2. Production branchを`main`に明示設定する。GitHubのデフォルトブランチを`develop`へ変更しても、本番ブランチが連動変更されないよう確認する。
+3. Preview buildsを有効にし、`develop`と作業ブランチからPreviewを作成できる状態にする。
+4. 既存のBuild command、Deploy command、Preview commandを記録し、Previewが本番deploymentを昇格・置換しないことを確認する。
+5. 既存のWorker Custom DomainとDNSレコードはこの作業では変更しない。
 
-1. GitHubにリポジトリを作成し、少なくとも`main`ブランチを一度pushする。
-2. Cloudflareアカウントを用意する。
-3. 独自ドメインをCloudflare Registrarで取得する、または既存ドメインのネームサーバーをCloudflare指定のものへ変更して、Cloudflareのゾーンとして有効にする。
-   ルートドメイン（`example.com`）をPagesに接続するには、当該ゾーンが同じCloudflareアカウントで管理されている必要がある。
-
-### Cloudflare PagesとGitHubを接続する
-
-1. Cloudflareダッシュボードで **Workers & Pages** を開き、**Create application** → **Pages** → **Connect to Git** を選ぶ。
-2. GitHubを認可し、このリポジトリを選択する。
-3. プロジェクト名を決める。最初の公開URLは`<project-name>.pages.dev`となる。
-4. **Production branch** に`main`を指定する。
-5. 現時点ではフレームワークを選ばず、次のビルド設定にする。
-
-   | 設定項目 | 値 |
-   | --- | --- |
-   | Framework preset | None / 未選択 |
-   | Build command | 空欄 |
-   | Build output directory | `/`（リポジトリ直下） |
-   | Root directory | 空欄（リポジトリ直下） |
-
-   `index.html`がリポジトリ直下にある構成のため、ビルドは不要である。将来Viteなどを導入したら、出力先（例: `dist`）を指定し、ローカルでも同じビルドコマンドが成功することを確認する。
-6. Preview branchの対象を`develop`および必要な作業ブランチに設定する。
-7. **Save and Deploy** を選び、完了後に`https://<project-name>.pages.dev`で初回公開を確認する。
-
-Git連携を選んだPagesプロジェクトは、後からDirect Upload方式へ切り替えられない。通常の運用では問題ないため、このポートフォリオではGit連携を継続する。
-
-### 独自ドメインとHTTPSを設定する
-
-1. Pagesプロジェクトの **Custom domains** → **Set up a domain** から、まず`example.com`を追加する。
-   CloudflareがDNSレコードを作成するまで待ち、ステータスが有効になったことを確認する。
-2. 同じ画面から`www.example.com`もカスタムドメインとして追加する。
-   DNSレコードを手動で先に作るのではなく、必ずPagesのドメイン追加フローを先に実行する。先にCNAMEだけを作ると名前解決できず、`522`になることがある。
-3. **Bulk Redirects** で`www.example.com`から`https://example.com`へのリストとルールを作成する。
-   設定は`301`、**Preserve query string**、**Subpath matching**、**Preserve path suffix**を有効にする。
-4. **DNS** で`www`のプロキシ有効（オレンジ雲）のレコードを用意する。オリジンを持たないリダイレクト専用レコードには、Cloudflare公式の予約アドレス`192.0.2.1`をAレコードとして指定できる。
-5. Cloudflareの **SSL/TLS** で証明書の発行完了を確認し、**Always Use HTTPS** を有効にする。
-   証明書発行やDNS伝播には時間がかかる場合がある。既存のCAAレコードがある場合は、Cloudflareの証明書発行を許可しているかを確認する。
-
-`_redirects`はパス単位のリダイレクトには利用できるが、ドメイン単位の`www → apex`リダイレクトには使わない。
+CloudflareのWorkers Buildsはproduction branchへのpushでproduction buildを行い、Preview buildsを有効にすると他ブランチをPreviewとして扱う。利用中のPreview commandやPreview設定はWorkerの既存状態を確認して維持する。
 
 ### 日常の公開フロー
 
 1. `develop`から作業ブランチを作り、変更をcommitしてGitHubへpushする。
-2. 作業ブランチから`develop`へのPull Requestを作成する。Cloudflare Pagesはブランチ／PRごとにPreview URLとGitHubのデプロイステータスを作成する。
+2. 作業ブランチから`develop`へのPull Requestを作成する。Workers BuildsのPreview URLとGitHub Actionsの`quality-gate`を確認する。
 3. Preview URLで表示、リンク、スマートフォン幅のレイアウトを確認する。
 4. `develop`へマージし、統合状態を確認する。
 5. リリース時に`develop`から`main`へのPull Requestを作成する。
-6. `main`へマージするとPagesが本番デプロイを開始する。
-7. Pagesの **Deployments** で対象commitが成功したことを確認し、`https://example.com`で公開確認を行う。
+6. `main`へマージするとWorkers Buildsが本番デプロイを開始する。
+7. Cloudflareの **Workers & Pages** で対象buildが成功したことを確認し、現在の本番URLで公開確認を行う。
 
-失敗時はPagesのデプロイ詳細にあるBuild logを最初に確認する。現在はビルドコマンドがないため、主な確認対象はリポジトリ直下に`index.html`があることと、参照するCSS・JavaScript・画像のパスである。
+失敗時はWorkers Buildsのbuild logを確認する。Build command、Deploy command、Preview commandはCloudflare上のWorker設定を正として確認する。
 
 ### 公開後の確認コマンド
 
@@ -144,26 +109,24 @@ curl --head --location https://www.example.com/
 
 両方が最終的に`https://example.com/`を返すこと、`www`からの最初の応答が`301`であること、HTTPSのエラーがないことを確認する。
 
-### Web Analyticsを有効にする
+### Web Analytics
 
-Pagesプロジェクトの **Metrics** で **Web Analytics** を有効にする。次回デプロイ時にCloudflareが計測用スニペットを自動追加するため、HTMLへ手作業でスニペットを貼り付ける必要はない。
+Cloudflare Web AnalyticsはWorkersのデプロイ方式と独立して管理する。既存のAnalytics設定を維持し、ホスティング変更時に計測が継続していることを確認する。
 
 ## 運用上の注意
 
-- APIキー、トークン、個人情報をリポジトリへcommitしない。将来ビルド時の設定値が必要になった場合は、Pagesの **Settings** → **Environment variables** で管理する。
-- `main`以外へのpushはPreviewデプロイの対象になり得る。不要なブランチを自動デプロイしたくない場合は、PagesのBranch controlで対象を`develop`と必要な作業ブランチに絞る。
+- APIキー、トークン、個人情報をリポジトリへcommitしない。ビルド変数やsecretはWorkers Buildsの設定で管理する。
+- `main`以外へのpushはPreview buildの対象になり得る。Preview用のsecretやbindingはproductionと分けて設定する。
 - 大きな画像・動画を追加する前に、ローカル表示とモバイル回線相当での読み込みを確認する。
 
 ## 情報の確認元
 
-以下は2026-07-22に確認したCloudflare公式ドキュメントである。CloudflareのUIや設定項目は変わり得るため、実施時にもリンク先を参照する。
+Cloudflareの設定項目は変わり得るため、実施時にも公式ドキュメントを確認する。
 
-- [Cloudflare Pages: Git integration](https://developers.cloudflare.com/pages/get-started/git-integration/)
-- [Cloudflare Pages: GitHub integration](https://developers.cloudflare.com/pages/configuration/git-integration/github-integration/)
-- [Cloudflare Pages: Branch deployment controls](https://developers.cloudflare.com/pages/configuration/branch-build-controls/)
-- [Cloudflare Pages: Custom domains](https://developers.cloudflare.com/pages/configuration/custom-domains/)
-- [Cloudflare Pages: Redirecting www to domain apex](https://developers.cloudflare.com/pages/how-to/www-redirect/)
-- [Cloudflare Pages: Redirects](https://developers.cloudflare.com/pages/configuration/redirects/)
+- [Cloudflare Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/)
+- [Cloudflare Workers Builds: Build branches](https://developers.cloudflare.com/workers/ci-cd/builds/build-branches/)
+- [Cloudflare Workers Builds: Configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/)
+- [Cloudflare Workers: Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/)
 - [Cloudflare Web Analytics: Get started](https://developers.cloudflare.com/web-analytics/get-started/)
 
 ## アセット方針
@@ -178,7 +141,7 @@ Pagesプロジェクトの **Metrics** で **Web Analytics** を有効にする�
 以下はMVPに含めない。必要性が生じた段階で追加を検討する。
 
 - お問い合わせフォーム
-- Cloudflare Workers
+- サーバー側APIや動的処理
 - Turnstile
 - データベース
 - 会員機能・管理画面
