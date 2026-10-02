@@ -16,7 +16,7 @@ npm run dev
 
 ## 公開
 
-Cloudflare Workers BuildsでGitHubの`main`ブランチを本番デプロイします。Workerの静的アセットは `wrangler.jsonc` で `out` を指定しています。Cloudflare管理画面のBuild commandを `npm run build`、Deploy commandを `npx wrangler deploy`、Preview commandを `npx wrangler preview` に設定し、Preview確認後に `develop → main` で公開します。切り替え手順と未確認事項は[移行実装の確認記録](docs/react-migration-checklist.md)を参照してください。
+Cloudflare Workers BuildsでGitHubの`main`ブランチを本番デプロイします。Workerの静的アセットは `wrangler.jsonc` で `out` を指定しています。Cloudflare管理画面のBuild commandを `npm run build`、Deploy commandを `npx wrangler deploy` に設定し、Preview確認後に `develop → main` で公開します。Preview commandの項目はWorker Previewsへの切り替え状態によって表示が異なるため、現行の設定を確認します。切り替え手順と未確認事項は[移行実装の確認記録](docs/react-migration-checklist.md)を参照してください。
 
 ## 設計・移行ドキュメント
 
