@@ -7,12 +7,12 @@
 
 :root {
     /* カラーパレット - 水色をメインに */
-    --primary-color: #87CEEB;
+    --primary-color: #0077A8;
     --primary-light: #B0E0F6;
-    --primary-dark: #5FB8D9;
+    --primary-dark: #006B96;
     --accent-color: #FFD700;
     --text-dark: #2C3E50;
-    --text-light: #7F8C8D;
+    --text-light: #637278;
     --bg-white: #FFFFFF;
     --bg-light: #F8FAFB;
     --bg-gradient: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 100%);
