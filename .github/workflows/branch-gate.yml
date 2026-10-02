@@ -25,12 +25,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
-      - name: Check required site files
-        run: test -s src/index.html && test -s src/style.css
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Check JavaScript syntax
-        run: node --check src/script.js
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build static site
+        run: npm run build
 
   release-source:
     name: release-source
