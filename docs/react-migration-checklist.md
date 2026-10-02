@@ -29,6 +29,7 @@ PC・スマートフォンの目視比較とキーボード操作の実機確認
 
 1. ローカルで `npm ci`、`npm run lint`、`npm run typecheck`、`npm run build` を実行する。
 2. Workers BuildsのBuild commandを `npm run build`、Deploy commandを `npx wrangler deploy`、Preview commandを `npx wrangler preview`、Production branchを `main` にする。Preview buildsを有効にし、Preview commandが本番deploymentを置き換えないことを設定画面で確認する。
+   - `assets.directory` の `./out` が存在しないというエラーが出た場合、Build commandが実行されていない。Root directoryをリポジトリ直下にし、Build commandを `npm run build` に設定して保存後、失敗したPreview buildを再実行する。Wrangler設定内のカスタムbuild設定だけではWorkers BuildsのBuild commandを代用できない。
 3. 作業ブランチから `develop` へのPRでPreview URLを開き、`/` と存在しないURLの応答、全セクション、外部リンク、画像、PC幅とスマートフォン幅、キーボード操作、動きを減らす設定を確認する。
 4. `develop` に統合した後、`develop → main` のPRを作成する。Previewと `quality-gate` を再確認してからマージする。
 5. 本番でHTTPS、正規URL、wwwリダイレクト、画像と外部リンクを確認する。問題があれば記録した旧deploymentに戻す。
