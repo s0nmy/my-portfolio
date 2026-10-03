@@ -5,11 +5,11 @@
 個人ポートフォリオを、軽量で更新しやすく、独自ドメインで公開する。
 MVPでは作品紹介・プロフィール・外部SNSへの導線を提供する。
 
-## 現在の方針（2026-10-02）
+## 現在の構成（2026-10-02）
 
-現在は静的なHTML / CSS / JavaScriptサイトで、GitHub上にはCloudflare Workers Buildsによる`my-portfolio`のproduction build履歴がある。Next.js / Reactへ段階的に移行し、既存WorkerとCloudflare Registrar / DNSを継続する。
+サイトはNext.js App Router / React / TypeScriptで構成し、静的出力をCloudflare Workerから配信する。移行前のHTML / CSS / JavaScriptは比較用に`legacy/static-site`へ保管し、画像とfaviconは`public`を正本として共有する。旧版への復旧にはGit履歴またはCloudflareの過去のdeploymentを使う。
 
-DBや管理画面はReact化と同時には導入しない。まずコンテンツと表示を分離し、ブラウザからの編集、画像アップロード、即時公開などの需要が明確になった時点でDB導入を判断する。
+DBや管理画面はまだ導入しない。プロジェクト情報は`app/content/projects.ts`に置き、ブラウザからの編集、画像アップロード、即時公開などの需要が明確になった時点でDB導入を判断する。
 
 詳しい判断は次の文書に記録する。
 
@@ -19,17 +19,16 @@ DBや管理画面はReact化と同時には導入しない。まずコンテン�
 - [ADR 0003: Cloudflareのドメイン・DNSとアプリ実行基盤を分離する](adr/0003-cloudflare-domain-and-runtime.md)
 - [ADR 0004: developを統合ブランチ、mainを本番デプロイブランチとする](adr/0004-branching-and-deployment-strategy.md)
 
-## 現在と移行後
+## 現行構成と次の候補
 
-| 領域 | 現在 | React化後の初期方針 | 将来の候補 |
-| --- | --- | --- | --- |
-| フロントエンド | HTML / CSS / JavaScript | Next.js / React / TypeScript | 継続 |
-| コンテンツ | HTMLへ直書き | TypeScriptまたはJSONへ分離 | SupabaseなどのDB |
-| 画像・動画 | リポジトリ内 | `public/images`などへ整理 | Supabase Storage / Cloudflare R2 |
-| ホスティング | Cloudflare Workers | 既存Worker上でNext.jsの出力・実行方式を検証 | Worker継続、または必要時にVercel等を評価 |
-| ドメイン・DNS | Cloudflare Registrar / DNS | 継続 | 継続 |
-| 管理画面 | なし | なし | Next.js `/admin` |
-| 認証 | なし | なし | Supabase Authまたは別の認証基盤 |
+| 領域 | 現行構成 | 次の候補 |
+| --- | --- | --- |
+| フロントエンド | Next.js / React / TypeScript、静的出力 | 詳細ページなどを段階的に追加 |
+| コンテンツ | プロジェクトは`app/content/projects.ts`、その他は各コンポーネント | 必要に応じてデータ定義を分離 |
+| 画像・動画 | `public/`で管理。旧サイトも同じ画像を参照 | 増加時にCloudflare R2などを検討 |
+| ホスティング | Cloudflare Workers BuildsからWorkerへ静的出力を配信 | SSRなどが必要になった時点で方式を再評価 |
+| ドメイン・DNS | Cloudflare Registrar / DNS | 継続 |
+| 管理画面・認証 | なし | 要件が明確になった時点で検討 |
 
 ## MVPの構成
 
@@ -48,7 +47,7 @@ GitHub repository
 | ホスティング | Cloudflare Workers | サイトを実行・配信 |
 | デプロイ | Cloudflare Workers Builds | `main`から本番デプロイし、他ブランチはPreviewとして確認 |
 | ソース管理 | GitHub | ソースコードと変更履歴の管理 |
-| フロントエンド | HTML / CSS / JavaScript | サンプルを出発点にして実装 |
+| フロントエンド | Next.js / React / TypeScript | 静的出力をCloudflare Workerで配信 |
 | アクセス解析 | Cloudflare Web Analytics | Cookieバナーなしで基本的な閲覧状況を確認 |
 
 ## ドメイン設計

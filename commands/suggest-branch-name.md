@@ -1,4 +1,4 @@
-# Branch Name Suggestion
+# Codex command: suggest-branch-name
 
 ワークフローの定義は `docs/workflows/suggest-branch-name/README.md` が正典です。
 

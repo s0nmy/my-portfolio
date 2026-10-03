@@ -1,4 +1,4 @@
-# Git PR Flow
+# Claude Code slash command: create-pull-request
 
 ワークフローの定義は `docs/workflows/create-pull-request/README.md` が正典です。
 
