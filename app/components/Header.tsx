@@ -7,17 +7,33 @@ export function Header() {
 
   useEffect(() => {
     const hero = document.getElementById("hero");
-    if (!hero) {
+    const header = document.querySelector("header");
+    if (!hero || !header) {
       setHeaderVisible(true);
       return;
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => setHeaderVisible(!entry.isIntersecting),
-      { rootMargin: "-104px 0px 0px 0px", threshold: 0 },
-    );
-    observer.observe(hero);
-    return () => observer.disconnect();
+    let observer: IntersectionObserver | undefined;
+    const updateHeaderOffset = () => {
+      const headerHeight = Math.ceil(header.getBoundingClientRect().height);
+      document.documentElement.style.setProperty("--header-height", `${headerHeight}px`);
+      observer?.disconnect();
+      observer = new IntersectionObserver(
+        ([entry]) => setHeaderVisible(entry.boundingClientRect.bottom <= headerHeight),
+        { rootMargin: `-${headerHeight}px 0px 0px 0px`, threshold: 0 },
+      );
+      observer.observe(hero);
+    };
+
+    const resizeObserver = new ResizeObserver(updateHeaderOffset);
+    resizeObserver.observe(header);
+    updateHeaderOffset();
+
+    return () => {
+      observer?.disconnect();
+      resizeObserver.disconnect();
+      document.documentElement.style.removeProperty("--header-height");
+    };
   }, []);
 
   return (
