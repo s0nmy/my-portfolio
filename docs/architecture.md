@@ -5,9 +5,9 @@
 個人ポートフォリオを、軽量で更新しやすく、独自ドメインで公開する。
 MVPでは作品紹介・プロフィール・外部SNSへの導線を提供する。
 
-## 現在の構成（2026-10-02）
+## 現在の構成（2026-10-05）
 
-サイトはNext.js App Router / React / TypeScriptで構成し、静的出力をCloudflare Workerから配信する。移行前のHTML / CSS / JavaScriptは比較用に`legacy/static-site`へ保管し、画像とfaviconは`public`を正本として共有する。旧版への復旧にはGit履歴またはCloudflareの過去のdeploymentを使う。
+サイトはNext.js App Router / React / TypeScriptで構成し、静的出力をCloudflare Workerから配信する。画像とfaviconは`public`を正本として共有する。移行前のソースはGit履歴から確認でき、旧版への復旧にはGit履歴またはCloudflareの過去のdeploymentを使う。
 
 DBや管理画面はまだ導入しない。プロジェクト情報は`app/content/projects.ts`に置き、ブラウザからの編集、画像アップロード、即時公開などの需要が明確になった時点でDB導入を判断する。
 

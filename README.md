@@ -1,13 +1,12 @@
 # Portfolio
 
-個人ポートフォリオサイトです。Next.js / React / TypeScript の静的出力でトップページを構成します。移行前の HTML / CSS / JavaScript は比較用に `legacy/static-site` に保管し、画像とfaviconは `public` のファイルを参照します。旧版へ戻す場合は Git 履歴または Cloudflare の過去の deployment を使います。旧ソースはリポジトリ内の比較用で、単独で配布する場合は `public/` のアセットも必要です。
+個人ポートフォリオサイトです。Next.js / React / TypeScript の静的出力でトップページを構成します。画像とfaviconは `public` のファイルを参照します。移行前のソースはGit履歴から確認できます。
 
 ## ディレクトリ
 
 ```text
 app/                    Next.js App Router、画面コンポーネント、コンテンツ
 public/                 公開アセットの正本
-legacy/static-site/     移行前サイトの比較用ソース
 docs/                   設計、ADR、移行・運用記録
 docs/workflows/         Codex / Claude Code 共通ワークフローの正本
 ```

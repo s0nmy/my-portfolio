@@ -1,10 +1,10 @@
 # 技術構成の移行計画
 
-> 実装状況（2026-10-02）: Next.js / React / TypeScriptでトップページを実装し、静的出力を`out`へ生成する。作品詳細ページと作品別SEOは次のリリースに分ける。ローカルのlint、型チェック、build、Wrangler previewは確認済み。Cloudflare上のPreview・本番確認と実機確認は未完了で、切り替え前にBuild／Preview設定と復旧用deployment IDを記録する。手順は[React移行の確認記録](react-migration-checklist.md)を参照する。
+> 実装状況（2026-10-05）: Next.js / React / TypeScriptでトップページを実装し、静的出力を`out`へ生成する。移行前のHTML / CSS / JavaScriptはリポジトリから削除し、Git履歴に残している。作品詳細ページと作品別SEOは次のリリースに分ける。ローカルのlint、型チェック、build、Wrangler previewは確認済み。Cloudflare上のPreview・本番確認と実機確認は未完了で、切り替え前にBuild／Preview設定と復旧用deployment IDを記録する。手順は[React移行の確認記録](react-migration-checklist.md)を参照する。
 
 ## 目的
 
-Next.js / React / TypeScriptの静的サイトをCloudflare Workerから配信する。初回移行の実装は完了し、今後は作品詳細ページ、SEO、アクセシビリティ、コンテンツ管理の必要性を段階的に検討する。移行前のHTML / CSS / JavaScriptは`legacy/static-site/`に比較用として保管している。
+Next.js / React / TypeScriptの静的サイトをCloudflare Workerから配信する。初回移行の実装は完了し、今後は作品詳細ページ、SEO、アクセシビリティ、コンテンツ管理の必要性を段階的に検討する。移行前のHTML / CSS / JavaScriptはリポジトリから削除し、Git履歴に残している。
 
 この計画では、ドメイン停止、既存デザインの意図しない破壊、不要なDB導入を避けながら段階的に移行する。
 
@@ -194,7 +194,7 @@ Cloudflare中心の構成を優先する場合は、D1 / R2 / Workersを比較�
 
 ## Rollback policy
 
-- 移行前のソースは`legacy/static-site/`に比較用として保持し、画像とfaviconは`public/`のアセットを共有する。旧版への復旧にはGit履歴またはCloudflareの過去のdeploymentを使う。
+- 移行前のソースはGit履歴から確認でき、画像とfaviconは`public/`のアセットを共有する。旧版への復旧にはGit履歴またはCloudflareの過去のdeploymentを使う。
 - `develop`と`main`のBranch protectionを解除して緊急対応しない。例外時は理由と事後同期を記録する。
 - 現在のWorker deploymentを削除しない。
 - 本番DNSの変更は最後に行う。
