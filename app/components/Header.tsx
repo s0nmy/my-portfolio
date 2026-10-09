@@ -1,37 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { HERO_INTRO_DONE_EVENT } from "./Hero";
 
 export function Header() {
-  const [isHeaderVisible, setHeaderVisible] = useState(false);
+  const [isVisible, setVisible] = useState(false);
 
   useEffect(() => {
-    const hero = document.getElementById("hero");
     const header = document.querySelector("header");
-    if (!hero || !header) {
-      setHeaderVisible(true);
-      return;
-    }
+    if (!header) return;
 
-    let observer: IntersectionObserver | undefined;
     const updateHeaderOffset = () => {
       const headerHeight = Math.ceil(header.getBoundingClientRect().height);
       document.documentElement.style.setProperty("--header-height", `${headerHeight}px`);
-      observer?.disconnect();
-      observer = new IntersectionObserver(
-        ([entry]) => setHeaderVisible(entry.boundingClientRect.bottom <= headerHeight),
-        { rootMargin: `-${headerHeight}px 0px 0px 0px`, threshold: 0 },
-      );
-      observer.observe(hero);
     };
 
     const resizeObserver = new ResizeObserver(updateHeaderOffset);
     resizeObserver.observe(header);
     updateHeaderOffset();
 
+    const showHeader = () => setVisible(true);
+    window.addEventListener(HERO_INTRO_DONE_EVENT, showHeader);
+
     return () => {
-      observer?.disconnect();
       resizeObserver.disconnect();
+      window.removeEventListener(HERO_INTRO_DONE_EVENT, showHeader);
       document.documentElement.style.removeProperty("--header-height");
     };
   }, []);
@@ -39,7 +32,7 @@ export function Header() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-[1000] bg-white/[0.98] backdrop-blur-[10px] transition-all duration-300 motion-reduce:transition-none ${
-        isHeaderVisible
+        isVisible
           ? "visible translate-y-0 opacity-100 pointer-events-auto"
           : "invisible -translate-y-full opacity-0 pointer-events-none"
       }`}
