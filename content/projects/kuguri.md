@@ -6,8 +6,8 @@ technologies: React / TypeScript / React Native (Expo)
 image: /images/Kuguri.png
 imageAlt: Kuguriの画面
 href: https://github.com/TeamH04/team-production
-x: 270
-y: 680
+x: 240
+y: 220
 ---
 
 チームでのプロダクト制作を通じて、UIと使い心地を改善しました。

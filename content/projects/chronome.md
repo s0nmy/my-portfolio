@@ -6,8 +6,8 @@ technologies: Go / React / TypeScript / PostgreSQL
 image: /images/ChronoMe/00_ChronoMe.png
 imageAlt: ChronoMeの画面
 href: https://github.com/s0nmy/ChronoMe
-x: 610
-y: 90
+x: 910
+y: 20
 ---
 
 初めての個人制作として、時間の記録と振り返りを扱うWebアプリを制作しました。

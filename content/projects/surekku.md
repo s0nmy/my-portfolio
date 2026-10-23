@@ -6,8 +6,8 @@ technologies: Go / Swift / SwiftUI / BLE / GCP
 image: /images/hackathon/00_hackathon.png
 imageAlt: すれックの画面
 href: https://github.com/Digix00/hackathon
-x: 1070
-y: 420
+x: 1180
+y: 700
 ---
 
 Google Developer Groups on Campus Hackathon 2026で制作したチームプロジェクトです。
