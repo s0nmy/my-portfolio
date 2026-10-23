@@ -1,11 +1,12 @@
 # Portfolio
 
-個人ポートフォリオサイトです。Next.js / React / TypeScript の静的出力でトップページを構成します。移行前の HTML / CSS / JavaScript は比較用に `legacy/static-site` に保管し、画像とfaviconは `public` のファイルを参照します。旧版へ戻す場合は Git 履歴または Cloudflare の過去の deployment を使います。旧ソースはリポジトリ内の比較用で、単独で配布する場合は `public/` のアセットも必要です。
+個人ポートフォリオサイトです。Next.js / React / TypeScript の静的出力で構成します。トップページは探索型キャンバス、従来のページは `/classic` です。作品の新しい正本は `content/projects/*.md` で、画像とfaviconは `public` のファイルを参照します。移行前の HTML / CSS / JavaScript は比較用に `legacy/static-site` に保管しています。旧版への復旧には Git 履歴または Cloudflare の過去の deployment を使います。旧ソースを単独で配布する場合は `public/` のアセットも必要です。
 
 ## ディレクトリ
 
 ```text
 app/                    Next.js App Router、画面コンポーネント、コンテンツ
+content/projects/        作品のMarkdownとFrontmatter
 public/                 公開アセットの正本
 legacy/static-site/     移行前サイトの比較用ソース
 docs/                   設計、ADR、移行・運用記録
@@ -31,5 +32,6 @@ Cloudflare Workers BuildsでGitHubの`main`ブランチを本番デプロイし�
 ## 設計・移行ドキュメント
 
 - [アーキテクチャ方針](docs/architecture.md)
+- [キャンバス型ポートフォリオの設計](docs/infinite-canvas.md)
 - [移行計画](docs/migration-plan.md)
 - [ADR一覧](docs/adr/README.md)
