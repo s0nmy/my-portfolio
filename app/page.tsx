@@ -1,12 +1,6 @@
-import { Header } from "./components/Header";
-import { Hero } from "./components/Hero";
-import { Profile } from "./components/Profile";
-import { Skills } from "./components/Skills";
-import { ProjectGallery } from "./components/ProjectGallery";
-import { Activity } from "./components/Activity";
-import { Footer } from "./components/Footer";
-import { projects } from "./content/projects";
+import { CanvasPortfolio } from "./components/CanvasPortfolio";
+import { getCanvasProjects } from "./content/canvas-projects";
 
 export default function Home() {
-  return <><Header /><main><Hero /><Profile /><Skills /><ProjectGallery projects={projects} /><Activity /></main><Footer /></>;
+  return <CanvasPortfolio projects={getCanvasProjects()} />;
 }
