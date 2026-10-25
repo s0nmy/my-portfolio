@@ -95,6 +95,8 @@
   .pane-heading + .layer-group-label { margin-top: 20px; }
   .inspect-content { padding: 22px 10px 10px; }
   .canvas-controls { right: 14px; bottom: 14px; }
+  .canvas-controls button { min-width: 44px; height: 44px; font-size: 17px; }
+  .canvas-controls .reset-button { min-width: 72px; font-size: 11px; }
   .about-card .card-eyebrow { font-size: 12px; }
   .about-role { font-size: 16px; }
   .about-copy { font-size: 16px; }
