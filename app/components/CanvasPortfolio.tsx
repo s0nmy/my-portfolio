@@ -13,6 +13,7 @@ type PaneWidths = { layers: number | null; inspect: number | null };
 type ResizeGesture = { pointerId: number; pane: Pane; originX: number; layers: number; inspect: number; workspace: number };
 type CardSize = { width: number; height: number };
 type CardResizeGesture = { pointerId: number; slug: string; origin: Point; size: CardSize; scale: number };
+type PinchGesture = { distance: number; center: Point; camera: Camera };
 
 const aboutPosition: Point = { x: 600, y: 430 };
 const aboutWidth = 520;
@@ -39,6 +40,8 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
   const gestureRef = useRef<Gesture | null>(null);
   const resizeRef = useRef<ResizeGesture | null>(null);
   const cardResizeRef = useRef<CardResizeGesture | null>(null);
+  const touchPointsRef = useRef<Map<number, Point>>(new Map());
+  const pinchRef = useRef<PinchGesture | null>(null);
   const [paneWidths, setPaneWidths] = useState<PaneWidths>({ layers: null, inspect: null });
   const [camera, setCamera] = useState<Camera>(initialCamera);
   const [selected, setSelected] = useState("about");
@@ -105,14 +108,51 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
     viewportRef.current?.focus();
   }
 
+  function trackTouchStart(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType !== "touch" || touchPointsRef.current.size >= 2) return;
+    touchPointsRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (touchPointsRef.current.size !== 2) return;
+    const [first, second] = [...touchPointsRef.current.values()];
+    const bounds = event.currentTarget.getBoundingClientRect();
+    pinchRef.current = {
+      distance: Math.hypot(second.x - first.x, second.y - first.y),
+      center: { x: (first.x + second.x) / 2 - bounds.left, y: (first.y + second.y) / 2 - bounds.top },
+      camera,
+    };
+    gestureRef.current = null;
+    cardResizeRef.current = null;
+  }
+
+  function trackTouchMove(event: PointerEvent<HTMLDivElement>) {
+    if (!touchPointsRef.current.has(event.pointerId)) return;
+    touchPointsRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    const pinch = pinchRef.current;
+    if (!pinch || touchPointsRef.current.size !== 2 || pinch.distance === 0) return;
+    const [first, second] = [...touchPointsRef.current.values()];
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const scale = Math.min(maxScale, Math.max(minScale, pinch.camera.scale * Math.hypot(second.x - first.x, second.y - first.y) / pinch.distance));
+    const centerX = (first.x + second.x) / 2 - bounds.left;
+    const centerY = (first.y + second.y) / 2 - bounds.top;
+    setCamera({
+      scale,
+      x: centerX - ((pinch.center.x - pinch.camera.x) / pinch.camera.scale) * scale,
+      y: centerY - ((pinch.center.y - pinch.camera.y) / pinch.camera.scale) * scale,
+    });
+  }
+
+  function trackTouchEnd(event: PointerEvent<HTMLDivElement>) {
+    if (!touchPointsRef.current.delete(event.pointerId)) return;
+    if (touchPointsRef.current.size < 2) pinchRef.current = null;
+  }
+
   function startPan(event: PointerEvent<HTMLDivElement>) {
-    if (event.target !== event.currentTarget || event.button !== 0) return;
+    if (pinchRef.current || event.target !== event.currentTarget || event.button !== 0) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     gestureRef.current = { pointerId: event.pointerId, kind: "pan", origin: { x: event.clientX, y: event.clientY }, camera };
   }
 
   function startCardDrag(event: PointerEvent<HTMLDivElement>, slug: string, card: Point) {
-    if (event.button !== 0) return;
+    if (pinchRef.current || event.button !== 0) return;
     event.stopPropagation();
     event.currentTarget.setPointerCapture(event.pointerId);
     setSelected(slug);
@@ -120,6 +160,7 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
   }
 
   function moveGesture(event: PointerEvent<HTMLElement>) {
+    if (pinchRef.current) return;
     const gesture = gestureRef.current;
     if (!gesture || gesture.pointerId !== event.pointerId) return;
     const dx = event.clientX - gesture.origin.x;
@@ -144,7 +185,7 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
   }
 
   function startCardResize(event: PointerEvent<HTMLButtonElement>, slug: string) {
-    if (event.button !== 0) return;
+    if (pinchRef.current || event.button !== 0) return;
     const card = event.currentTarget.parentElement;
     if (!card) return;
     event.preventDefault();
@@ -161,6 +202,7 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
   }
 
   function moveCardResize(event: PointerEvent<HTMLButtonElement>) {
+    if (pinchRef.current) return;
     const resize = cardResizeRef.current;
     if (!resize || resize.pointerId !== event.pointerId) return;
     event.stopPropagation();
@@ -259,7 +301,7 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
         <button className="pane-resizer" aria-label="Layers の幅を変更" onPointerDown={(event) => startPaneResize(event, "layers")} onPointerMove={movePaneResize} onPointerUp={() => { resizeRef.current = null; }} onPointerCancel={() => { resizeRef.current = null; }} onLostPointerCapture={() => { resizeRef.current = null; }} onKeyDown={(event) => resizePaneWithKeyboard(event, "layers")} />
 
         <section className="portfolio-canvas-panel" aria-label="Canvas">
-          <div ref={viewportRef} className="canvas-viewport" tabIndex={0} aria-label="キャンバス。矢印キーで移動、プラスとマイナスで拡大縮小" onPointerDown={startPan} onPointerMove={moveGesture} onPointerUp={endGesture} onPointerCancel={endGesture} onKeyDown={onCanvasKeyDown}>
+          <div ref={viewportRef} className="canvas-viewport" tabIndex={0} aria-label="キャンバス。矢印キーで移動、プラスとマイナスで拡大縮小。タッチ操作では2本指で拡大縮小" onPointerDownCapture={trackTouchStart} onPointerMoveCapture={trackTouchMove} onPointerUpCapture={trackTouchEnd} onPointerCancelCapture={trackTouchEnd} onPointerDown={startPan} onPointerMove={moveGesture} onPointerUp={endGesture} onPointerCancel={endGesture} onKeyDown={onCanvasKeyDown}>
             <div className="canvas-world" style={{ transform: `translate(${camera.x}px, ${camera.y}px) scale(${camera.scale})` }}>
               <article className={`canvas-card about-card ${selected === "about" ? "card-selected" : ""}`} style={{ left: positions.about?.x ?? aboutPosition.x, top: positions.about?.y ?? aboutPosition.y, width: cardSizes.about?.width, height: cardSizes.about?.height }} onClick={() => setSelected("about")}>
                 <div className="card-eyebrow about-card-handle" onPointerDown={(event) => startCardDrag(event, "about", positions.about ?? aboutPosition)} onPointerMove={moveGesture} onPointerUp={endGesture} onPointerCancel={endGesture}><span className="eyebrow-line" /> ABOUT ME <span className="about-drag-icon">⠿</span></div>
