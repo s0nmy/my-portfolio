@@ -12,6 +12,16 @@
 - 他者の写真、動画、SNS投稿は、無断で転載も直リンクもしない
   - 自作物、利用許諾済みの素材、ライセンス条件を満たす素材だけを使う
 
+## OGP画像
+
+SNSでシェアしたときのプレビューには、`public/og-image.png` を使う。
+
+- About Meカードを、キャンバスの背景ごと1200×630pxで撮影した静的なPNG
+- About Meカードの文言やデザインを変えたら、撮り直して差し替える
+- `app/opengraph-image.tsx` でビルド時に生成する方式は使わない
+  - 日本語フォントをリポジトリに入れる必要がある
+  - 拡張子のないファイルとして出力され、正しいContent-Typeで配信されないおそれがある
+
 ## 作品のMarkdownと画像の置き場所
 
 作品の説明は `content/projects/{slug}.md`、画像は `public/images/{slug}/` に置く。例えば `content/projects/chronome.md` と `public/images/chronome/` のように、同じ `{slug}` で対応させる。Markdownの `image` には `/images/chronome/00_ChronoMe.webp` のような公開パスを書く。

@@ -23,6 +23,12 @@ Workers Buildsは、production branchへのpushで本番をbuildする。Preview
 
 実際のドメイン名が決まるまで、設定値やURLをリポジトリに固定で書かない。
 
+正規URLは、Workers Buildsのビルド変数 `SITE_URL` に設定する。
+
+- 例：`SITE_URL=https://example.com`
+- OGPやTwitterカードの画像URLは、この値をもとに絶対URLになる
+- 未設定のときは `http://localhost:3000` になり、SNSのプレビューに画像が出ない
+
 ## Web Analytics
 
 Cloudflare Web Analyticsは、Workersのデプロイ方式とは別に管理する。既存の設定を維持し、ホスティングを変えたときは、計測が続いていることを確認する。
