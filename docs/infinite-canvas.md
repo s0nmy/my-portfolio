@@ -33,6 +33,17 @@ flowchart LR
 - 本文は将来の詳しい紹介用に保存し、Inspectには表示しない。Frontmatterは単純な `key: value` の行形式で、複雑なYAML構文は使わない。
 - リポジトリ内のMarkdownをビルド時に読む。DB・管理画面・サーバーAPIは追加しない。静的出力と既存のCloudflare配信方式を維持する。
 
+## 実装構成
+
+`app/canvas/` のCustom Hookは、関心ごとごとに分け、各ファイル冒頭にIntent / Boundary / State modeling / Update surface / Hidden complexity / Composition / Test notesを記載している。計算は `camera.ts` と `cardLayout.ts` の純粋関数に置く。
+
+- `useCamera`: カメラの状態の持ち主。scaleは常に範囲内に正規化する。
+- `usePinchZoom`: 2本指のズーム。
+- `useCardLayout`: カードの位置とサイズの持ち主。サイズは範囲内に丸めてから保存する。
+- `useCardSelection`: 選択と最前面の順序（`useReducer`）。
+- `useCardGestures`: パン・カード移動・カードのサイズ変更。同時に有効なジェスチャーは1つ。
+- `usePaneResize`: Layers / Inspectの幅。
+
 ## 段階
 
 1. 現状調査と方針記録、既存ページの退避先確保。

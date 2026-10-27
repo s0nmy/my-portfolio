@@ -1,40 +1,39 @@
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type RefObject } from "react";
-import { aboutPosition, aboutSize, initialCamera, maxScale, minScale } from "./constants";
-import type { Camera, CardSize, Point } from "./types";
+import { useCallback, useEffect, useState, type KeyboardEvent, type RefObject } from "react";
+import { cameraKeyAction, centerOn, homeCamera, normalizeCamera, zoomAround } from "./camera";
+import { initialCamera } from "./constants";
+import type { Camera, Point, Size } from "./types";
 
-type PinchGesture = { distance: number; center: Point; camera: Camera };
-
-function clampScale(scale: number) {
-  return Math.min(maxScale, Math.max(minScale, scale));
-}
-
-function zoomAround(current: Camera, factor: number, anchorX: number, anchorY: number): Camera {
-  const scale = clampScale(current.scale * factor);
-  return { scale, x: anchorX - ((anchorX - current.x) / current.scale) * scale, y: anchorY - ((anchorY - current.y) / current.scale) * scale };
-}
-
+/**
+ * Intent:  Own the canvas camera (pan offset + zoom) and the viewport-driven ways of changing it.
+ *          Changes when the view model or its viewport interactions (wheel, keys, jump to a card) change.
+ * Boundary: in  — the viewport element ref (to measure it and listen to the wheel).
+ *           out — camera, plus a small update surface (below).
+ * State modeling: one useState<Camera>. Every write goes through normalizeCamera, so an out-of-range
+ *          scale cannot be stored; `setCamera` is the only way for other hooks to write.
+ * Update surface: setCamera(camera), zoomBy(factor), goHome(aboutSize?), focusOn(position, size), onKeyDown.
+ * Hidden complexity: viewport measuring, wheel anchoring (non-passive listener), initial placement
+ *          after first layout, focusing the viewport for keyboard use.
+ * Composition: root of the view chain. usePinchZoom and useCardGestures write back through setCamera.
+ * Test notes: the math lives in camera.ts and is testable with inputs and outputs only.
+ */
 export function useCamera(viewportRef: RefObject<HTMLDivElement | null>) {
-  const touchPointsRef = useRef<Map<number, Point>>(new Map());
-  const pinchRef = useRef<PinchGesture | null>(null);
-  const [camera, setCamera] = useState<Camera>(initialCamera);
+  const [camera, setCameraState] = useState<Camera>(initialCamera);
+  const setCamera = useCallback((next: Camera) => setCameraState(normalizeCamera(next)), []);
 
-  const getHomeCamera = useCallback((currentAboutSize?: CardSize): Camera => {
+  const measureViewport = useCallback((): Size | null => {
     const bounds = viewportRef.current?.getBoundingClientRect();
-    if (!bounds) return initialCamera;
-    const width = currentAboutSize?.width ?? aboutSize.width;
-    const height = currentAboutSize?.height ?? aboutSize.height;
-    const scale = window.innerWidth <= 720 ? Math.min(0.7, (bounds.width - 24) / width) : bounds.width < 900 ? 0.9 : 1;
-    return {
-      scale,
-      x: bounds.width / 2 - (aboutPosition.x + width / 2) * scale,
-      y: bounds.height / 2 - (aboutPosition.y + height / 2) * scale,
-    };
+    return bounds ? { width: bounds.width, height: bounds.height } : null;
   }, [viewportRef]);
 
+  const goHome = useCallback((aboutCardSize?: Size) => {
+    const viewport = measureViewport();
+    setCameraState(viewport ? homeCamera(viewport, window.innerWidth, aboutCardSize) : initialCamera);
+  }, [measureViewport]);
+
   useEffect(() => {
-    const frame = window.requestAnimationFrame(() => setCamera(getHomeCamera()));
+    const frame = window.requestAnimationFrame(() => goHome());
     return () => window.cancelAnimationFrame(frame);
-  }, [getHomeCamera]);
+  }, [goHome]);
 
   useEffect(() => {
     const viewport = viewportRef.current;
@@ -42,83 +41,33 @@ export function useCamera(viewportRef: RefObject<HTMLDivElement | null>) {
     const handleWheel = (event: WheelEvent) => {
       event.preventDefault();
       const bounds = viewport.getBoundingClientRect();
-      setCamera((current) => zoomAround(current, Math.exp(-event.deltaY * 0.001), event.clientX - bounds.left, event.clientY - bounds.top));
+      const anchor: Point = { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+      setCameraState((current) => zoomAround(current, Math.exp(-event.deltaY * 0.001), anchor));
     };
     viewport.addEventListener("wheel", handleWheel, { passive: false });
     return () => viewport.removeEventListener("wheel", handleWheel);
   }, [viewportRef]);
 
-  function zoomAt(factor: number, clientX?: number, clientY?: number) {
-    const bounds = viewportRef.current?.getBoundingClientRect();
-    if (!bounds) return;
-    const anchorX = (clientX ?? bounds.left + bounds.width / 2) - bounds.left;
-    const anchorY = (clientY ?? bounds.top + bounds.height / 2) - bounds.top;
-    setCamera((current) => zoomAround(current, factor, anchorX, anchorY));
+  function zoomBy(factor: number) {
+    const viewport = measureViewport();
+    if (!viewport) return;
+    setCameraState((current) => zoomAround(current, factor, { x: viewport.width / 2, y: viewport.height / 2 }));
   }
 
-  /** Returns true when this event started a two-finger pinch. */
-  function trackTouchStart(event: PointerEvent<HTMLDivElement>) {
-    if (event.pointerType !== "touch" || touchPointsRef.current.size >= 2) return false;
-    touchPointsRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    if (touchPointsRef.current.size !== 2) return false;
-    const [first, second] = [...touchPointsRef.current.values()];
-    const bounds = event.currentTarget.getBoundingClientRect();
-    pinchRef.current = {
-      distance: Math.hypot(second.x - first.x, second.y - first.y),
-      center: { x: (first.x + second.x) / 2 - bounds.left, y: (first.y + second.y) / 2 - bounds.top },
-      camera,
-    };
-    return true;
-  }
-
-  function trackTouchMove(event: PointerEvent<HTMLDivElement>) {
-    if (!touchPointsRef.current.has(event.pointerId)) return;
-    touchPointsRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    const pinch = pinchRef.current;
-    if (!pinch || touchPointsRef.current.size !== 2 || pinch.distance === 0) return;
-    const [first, second] = [...touchPointsRef.current.values()];
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const scale = clampScale(pinch.camera.scale * Math.hypot(second.x - first.x, second.y - first.y) / pinch.distance);
-    const centerX = (first.x + second.x) / 2 - bounds.left;
-    const centerY = (first.y + second.y) / 2 - bounds.top;
-    setCamera({
-      scale,
-      x: centerX - ((pinch.center.x - pinch.camera.x) / pinch.camera.scale) * scale,
-      y: centerY - ((pinch.center.y - pinch.camera.y) / pinch.camera.scale) * scale,
-    });
-  }
-
-  function trackTouchEnd(event: PointerEvent<HTMLDivElement>) {
-    if (!touchPointsRef.current.delete(event.pointerId)) return;
-    if (touchPointsRef.current.size < 2) pinchRef.current = null;
+  function focusOn(position: Point, size: Size) {
+    const viewport = measureViewport();
+    if (!viewport) return;
+    setCameraState((current) => centerOn(current, viewport, position, size));
+    viewportRef.current?.focus();
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    const step = event.shiftKey ? 120 : 48;
-    const movement: Record<string, Point> = { ArrowLeft: { x: step, y: 0 }, ArrowRight: { x: -step, y: 0 }, ArrowUp: { x: 0, y: step }, ArrowDown: { x: 0, y: -step } };
-    if (movement[event.key]) {
-      event.preventDefault();
-      setCamera((current) => ({ ...current, x: current.x + movement[event.key].x, y: current.y + movement[event.key].y }));
-    } else if (event.key === "+" || event.key === "=") {
-      event.preventDefault();
-      zoomAt(1.2);
-    } else if (event.key === "-") {
-      event.preventDefault();
-      zoomAt(1 / 1.2);
-    }
+    const action = cameraKeyAction(event.key, event.shiftKey);
+    if (!action) return;
+    event.preventDefault();
+    if (action.kind === "zoom") zoomBy(action.factor);
+    else setCameraState((current) => ({ ...current, x: current.x + action.dx, y: current.y + action.dy }));
   }
 
-  return {
-    camera,
-    setCamera,
-    getHomeCamera,
-    zoomAt,
-    isPinching: () => pinchRef.current !== null,
-    trackTouchStart,
-    trackTouchMove,
-    trackTouchEnd,
-    onKeyDown,
-  };
+  return { camera, setCamera, zoomBy, goHome, focusOn, onKeyDown };
 }
-
-export type CameraControls = ReturnType<typeof useCamera>;

@@ -1,12 +1,14 @@
-import type { Point, CardSize } from "./types";
-import type { CanvasGestures } from "./useCanvasGestures";
+import type { Point, Size } from "./types";
+import type { CardGestures } from "./useCardGestures";
 
-/** Props shared by every card on the canvas. */
+/** Everything a card needs; cards never see the gesture hooks themselves. */
 export type CardProps = {
   position: Point;
-  size?: CardSize;
+  size?: Size;
   zIndex: number;
   selected: boolean;
-  onSelect: (slug: string) => void;
-  gestures: CanvasGestures;
+  onSelect: () => void;
+  dragHandleProps: ReturnType<CardGestures["dragHandleProps"]>;
+  touchDragProps: ReturnType<CardGestures["touchDragProps"]>;
+  resizeHandleProps: ReturnType<CardGestures["resizeHandleProps"]>;
 };

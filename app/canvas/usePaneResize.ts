@@ -2,7 +2,7 @@ import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerE
 import { minCanvasWidth, minInspectWidth, minLayersWidth, resizerWidth } from "./constants";
 import type { Pane } from "./types";
 
-type PaneWidths = { layers: number | null; inspect: number | null };
+type PaneWidths = Partial<Record<Pane, number>>;
 type ResizeGesture = { pointerId: number; pane: Pane; originX: number; layers: number; inspect: number; workspace: number };
 type Refs = {
   workspaceRef: RefObject<HTMLDivElement | null>;
@@ -12,14 +12,26 @@ type Refs = {
 
 const labels: Record<Pane, string> = { layers: "Layers の幅を変更", inspect: "Inspect の幅を変更" };
 
-/** Draggable and keyboard-resizable Layers / Inspect pane widths. */
+/**
+ * Intent:  Let the visitor change the Layers / Inspect pane widths by drag or keyboard.
+ *          Changes when pane sizing rules change.
+ * Boundary: in  — refs to the workspace and both panes (measured at gesture start; refs are created by
+ *                 the caller because they are attached to elements it renders).
+ *           out — workspaceStyle (CSS variables) and resizerProps(pane) to spread on a resizer button.
+ * State modeling: Partial<Record<Pane, number>>; a missing key means "use the CSS default", so there is
+ *          no null/sentinel width. resizePane is the only writer and clamps to the allowed range.
+ * Update surface: resizerProps(pane).
+ * Hidden complexity: min/max widths that keep the canvas wide, measurement at drag start.
+ * Composition: independent of the canvas hooks.
+ * Test notes: the clamping inside resizePane is pure arithmetic and can be lifted out if tested.
+ */
 export function usePaneResize({ workspaceRef, layersRef, inspectRef }: Refs) {
   const resizeRef = useRef<ResizeGesture | null>(null);
-  const [paneWidths, setPaneWidths] = useState<PaneWidths>({ layers: null, inspect: null });
+  const [paneWidths, setPaneWidths] = useState<PaneWidths>({});
 
   const workspaceStyle = {
-    "--layers-width": paneWidths.layers === null ? undefined : `${paneWidths.layers}px`,
-    "--inspect-width": paneWidths.inspect === null ? undefined : `${paneWidths.inspect}px`,
+    "--layers-width": paneWidths.layers === undefined ? undefined : `${paneWidths.layers}px`,
+    "--inspect-width": paneWidths.inspect === undefined ? undefined : `${paneWidths.inspect}px`,
   } as CSSProperties;
 
   function resizePane(pane: Pane, nextWidth: number, otherWidth: number, workspaceWidth: number) {

@@ -1,10 +1,10 @@
-import type { Camera, CardSize, Point } from "./types";
+import type { Camera, Point, Size } from "./types";
 
 export const aboutPosition: Point = { x: 600, y: 430 };
-export const aboutSize: CardSize = { width: 520, height: 470 };
-export const projectSize: CardSize = { width: 350, height: 380 };
-export const skillsSize: CardSize = { width: 390, height: 340 };
-export const timelineSize: CardSize = { width: 500, height: 500 };
+export const aboutSize: Size = { width: 520, height: 470 };
+export const projectSize: Size = { width: 350, height: 380 };
+export const skillsSize: Size = { width: 390, height: 340 };
+export const timelineSize: Size = { width: 500, height: 500 };
 
 export type CardKind = "about" | "project" | "timeline";
 export const cardSizeLimits: Record<CardKind, { minWidth: number; minHeight: number; maxWidth: number; maxHeight: number }> = {
