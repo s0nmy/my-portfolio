@@ -6,28 +6,31 @@
 
 ```mermaid
 flowchart LR
-  L["Layers<br/>作品一覧・項目へ移動"]
-  C["Canvas<br/>プロフィールと作品カード<br/>パン・ズーム・ドラッグ・選択"]
-  I["Inspect<br/>選択した項目の概要"]
+  L["Layers<br/>Profile / Selected Work<br/>項目へ移動"]
+  C["Canvas<br/>About Me・Skills・Timeline・作品カード<br/>パン・ズーム・ドラッグ・選択"]
+  I["Inspect<br/>選択した項目の説明"]
   L -->|選択| C
   C -->|選択内容| I
 ```
 
 - 中央Canvasは常に最も広い領域にする。左右のペインは補助として幅を抑える。
 - デスクトップではペイン境界をドラッグ、またはフォーカス後に左右矢印キーで動かせる。Canvasの最小幅を保ち、モバイルでは縦並びのままにする。
-- About Meを大きな中央カードに置き、作品4件を異なる距離と高さに散らす。カードは傾けない。最初の画面で周囲の作品が少し見えるようにし、訪問者がドラッグした位置はその閲覧中のみ保持する。初期配置は毎回同じにする。
+- LayersではAbout Me・Skills・TimelineをProfile、4作品をSelected Workにまとめる。Canvas上では固定の枠で囲まず、カードを自由に移動できる。初期配置は毎回同じにする。
+- About Meを大きな中央カードに置き、作品4件を異なる距離と高さに散らす。SkillsとTimelineは周囲に配置する。カードは傾けない。最初の画面で周囲の作品が少し見えるようにし、訪問者がドラッグした位置はその閲覧中のみ保持する。
 - 背景ドラッグでパン、ホイール・操作ボタンでズーム、カードのヘッダーで移動、右下のつまみでサイズ変更、クリックまたはLayersから選択する。ズームはポインター位置を基準にする。カードの位置とサイズはその閲覧中のみ保持する。
 - タッチ操作では2本指でキャンバスを拡大縮小できる。ピンチの中心を基準にし、同時にカードが移動しないようにする。狭い画面ではズームボタンも指で押しやすい大きさにする。
 - カードをクリックするたびにそのカードを最前面へ出す。Layersからの選択やカードの移動・サイズ変更でも同じ順序にする。
-- Inspectの見出し・説明・リンクはシンプルにする。作品の技術詳細や複雑な独自インタラクションは今後の段階で検討する。
+- 作品カードには「何のアプリか」を短く書き、Inspectには利用者ができることや使う場面を説明する。使用技術はカードとInspectに補助情報として残し、担当・こだわり・実装の詳細は将来の詳しい紹介に分ける。
+- Skillsカードは技術の分類とアイコン付きの技術名をコンパクトに表示し、サイズ変更は行わない。Timelineカードは活動名と時期を表示する。選択するとInspectで各項目を読める。
 - 狭い画面ではサイドペインを縦に並べ、Canvasを先に探索できる構成にする。
 - キーボードでもLayersから選択・移動でき、Canvasの矢印キーとズームボタンで移動できる。カード右下のつまみは矢印キーでもサイズ変更できる。動きの軽減設定を尊重する。
 - カードの移動・サイズ変更は「取り消し」または⌘Z / Ctrl+Zで一操作ずつ戻せる。履歴は閲覧中のみ保持し、繰り返すと初期の配置・大きさに戻る。
 
 ## コンテンツ
 
-- 作品の正本は `content/projects/*.md`。Frontmatterに `slug`, `title`, `description`, `technologies`, `image`, `imageAlt`, `href`, `x`, `y` を持たせる。
-- 本文は将来のケーススタディ用に保存し、現段階ではInspectに最初の段落だけを表示する。Frontmatterは単純な `key: value` の行形式で、複雑なYAML構文は使わない。
+- 作品の正本は `content/projects/*.md`。Frontmatterに `slug`, `title`, `description`（カード用のひと言）, `overview`（Inspect用の説明）, `technologies`, `image`, `imageAlt`, `href`, `x`, `y` を持たせる。
+- SkillsとTimelineの正本は `content/skills.md` と `content/timeline.md`。Frontmatterの `title`, `summary`, `x`, `y` と、本文の `##` 見出しで内容を管理する。Timelineは従来ページのActivity、Skillsは従来ページのSkillsを元にした。
+- 本文は将来の詳しい紹介用に保存し、Inspectには表示しない。Frontmatterは単純な `key: value` の行形式で、複雑なYAML構文は使わない。
 - リポジトリ内のMarkdownをビルド時に読む。DB・管理画面・サーバーAPIは追加しない。静的出力と既存のCloudflare配信方式を維持する。
 - 旧 `app/content/projects.ts` は `/classic` の表示用として残す。旧ページの削除は別の判断とする。
 

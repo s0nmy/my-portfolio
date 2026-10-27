@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from "react";
 import type { CanvasProject } from "../content/canvas-projects";
+import type { SkillsCard, TimelineCard } from "../content/canvas-profile";
+import { SkillIcon } from "./SkillIcon";
 import "../canvas.css";
 
 type Camera = { x: number; y: number; scale: number };
@@ -23,16 +25,19 @@ const minScale = 0.5;
 const maxScale = 1.8;
 const cardWidth = 350;
 const cardHeight = 380;
-const cardSizeLimits: Record<"about" | "project", { minWidth: number; minHeight: number; maxWidth: number; maxHeight: number }> = {
+const skillsSize: CardSize = { width: 390, height: 340 };
+const timelineSize: CardSize = { width: 500, height: 500 };
+const cardSizeLimits: Record<"about" | "project" | "timeline", { minWidth: number; minHeight: number; maxWidth: number; maxHeight: number }> = {
   about: { minWidth: 440, minHeight: 430, maxWidth: 800, maxHeight: 750 },
   project: { minWidth: 300, minHeight: 340, maxWidth: 650, maxHeight: 650 },
+  timeline: { minWidth: 450, minHeight: 460, maxWidth: 720, maxHeight: 750 },
 };
 const resizerWidth = 8;
 const minCanvasWidth = 320;
 const minLayersWidth = 160;
 const minInspectWidth = 200;
 
-export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
+export function CanvasPortfolio({ projects, profile }: { projects: CanvasProject[]; profile: { skills: SkillsCard; timeline: TimelineCard } }) {
   const workspaceRef = useRef<HTMLDivElement>(null);
   const layersRef = useRef<HTMLElement>(null);
   const inspectRef = useRef<HTMLElement>(null);
@@ -40,15 +45,28 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
   const gestureRef = useRef<Gesture | null>(null);
   const resizeRef = useRef<ResizeGesture | null>(null);
   const cardResizeRef = useRef<CardResizeGesture | null>(null);
+  const topCardOrderRef = useRef(1);
   const touchPointsRef = useRef<Map<number, Point>>(new Map());
   const pinchRef = useRef<PinchGesture | null>(null);
   const [paneWidths, setPaneWidths] = useState<PaneWidths>({ layers: null, inspect: null });
   const [camera, setCamera] = useState<Camera>(initialCamera);
   const [selected, setSelected] = useState("about");
+  const [cardOrder, setCardOrder] = useState<Record<string, number>>({ about: 1 });
   const [positions, setPositions] = useState<Record<string, Point>>({});
   const [cardSizes, setCardSizes] = useState<Record<string, CardSize>>({});
   const selectedProject = projects.find((project) => project.slug === selected);
+  const selectedSkills = selected === "skills";
+  const selectedTimeline = selected === "timeline";
+  const inspectTitle = selectedProject?.title ?? (selectedSkills ? profile.skills.title : selectedTimeline ? profile.timeline.title : "About Me");
+  const inspectDescription = selectedProject?.overview ?? (selectedSkills ? profile.skills.summary : selectedTimeline ? profile.timeline.summary : "神戸電子専門学校で学びながら、Webアプリケーション、モバイル開発、UI/UX、プロダクトマネジメントに取り組んでいます。");
   const getPosition = (project: CanvasProject) => positions[project.slug] ?? { x: project.x, y: project.y };
+  const getInfoPosition = (slug: "skills" | "timeline") => positions[slug] ?? { x: profile[slug].x, y: profile[slug].y };
+
+  function selectCard(slug: string) {
+    setSelected(slug);
+    const order = ++topCardOrderRef.current;
+    setCardOrder((current) => ({ ...current, [slug]: order }));
+  }
 
   function getHomeCamera(): Camera {
     const bounds = viewportRef.current?.getBoundingClientRect();
@@ -97,13 +115,14 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
   }
 
   function focusItem(slug: string) {
-    setSelected(slug);
+    selectCard(slug);
     const bounds = viewportRef.current?.getBoundingClientRect();
     if (!bounds) return;
     const project = projects.find((item) => item.slug === slug);
-    const position = project ? getPosition(project) : positions.about ?? aboutPosition;
-    const width = cardSizes[slug]?.width ?? (project ? cardWidth : aboutWidth);
-    const height = cardSizes[slug]?.height ?? (project ? cardHeight : aboutHeight);
+    const info = slug === "skills" || slug === "timeline" ? slug : null;
+    const position = project ? getPosition(project) : info ? getInfoPosition(info) : positions.about ?? aboutPosition;
+    const width = cardSizes[slug]?.width ?? (project ? cardWidth : info === "skills" ? skillsSize.width : info === "timeline" ? timelineSize.width : aboutWidth);
+    const height = cardSizes[slug]?.height ?? (project ? cardHeight : info === "skills" ? skillsSize.height : info === "timeline" ? timelineSize.height : aboutHeight);
     setCamera((current) => ({ ...current, x: bounds.width / 2 - (position.x + width / 2) * current.scale, y: bounds.height / 2 - (position.y + height / 2) * current.scale }));
     viewportRef.current?.focus();
   }
@@ -151,11 +170,11 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
     gestureRef.current = { pointerId: event.pointerId, kind: "pan", origin: { x: event.clientX, y: event.clientY }, camera };
   }
 
-  function startCardDrag(event: PointerEvent<HTMLDivElement>, slug: string, card: Point) {
+  function startCardDrag(event: PointerEvent<HTMLElement>, slug: string, card: Point) {
     if (pinchRef.current || event.button !== 0) return;
     event.stopPropagation();
     event.currentTarget.setPointerCapture(event.pointerId);
-    setSelected(slug);
+    selectCard(slug);
     gestureRef.current = { pointerId: event.pointerId, kind: "card", slug, origin: { x: event.clientX, y: event.clientY }, camera, card };
   }
 
@@ -177,7 +196,7 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
   }
 
   function clampCardSize(slug: string, size: CardSize): CardSize {
-    const limits = cardSizeLimits[slug === "about" ? "about" : "project"];
+    const limits = cardSizeLimits[slug === "about" || slug === "timeline" ? slug : "project"];
     return {
       width: Math.round(Math.min(limits.maxWidth, Math.max(limits.minWidth, size.width))),
       height: Math.round(Math.min(limits.maxHeight, Math.max(limits.minHeight, size.height))),
@@ -191,7 +210,7 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
     event.preventDefault();
     event.stopPropagation();
     event.currentTarget.setPointerCapture(event.pointerId);
-    setSelected(slug);
+    selectCard(slug);
     cardResizeRef.current = {
       pointerId: event.pointerId,
       slug,
@@ -222,6 +241,7 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
     if (!direction) return;
     event.preventDefault();
     event.stopPropagation();
+    selectCard(slug);
     const card = event.currentTarget.parentElement;
     if (!card) return;
     const size = cardSizes[slug] ?? { width: card.offsetWidth, height: card.offsetHeight };
@@ -293,8 +313,10 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
       <div ref={workspaceRef} className="portfolio-workspace" style={{ "--layers-width": paneWidths.layers === null ? undefined : `${paneWidths.layers}px`, "--inspect-width": paneWidths.inspect === null ? undefined : `${paneWidths.inspect}px` } as CSSProperties}>
         <aside ref={layersRef} className="portfolio-layers" aria-label="Layers">
           <div className="pane-heading"><span>LAYERS</span><span>01 / {String(projects.length + 1).padStart(2, "0")}</span></div>
-          <div className="layer-group-label">PORTFOLIO</div>
+          <div className="layer-group-label">PROFILE</div>
           <button className={`layer-item ${selected === "about" ? "is-selected" : ""}`} onClick={() => focusItem("about")}><span className="layer-icon">◇</span><span>About me</span></button>
+          <button className={`layer-item ${selectedSkills ? "is-selected" : ""}`} onClick={() => focusItem("skills")}><span className="layer-icon">◇</span><span>Skills</span></button>
+          <button className={`layer-item ${selectedTimeline ? "is-selected" : ""}`} onClick={() => focusItem("timeline")}><span className="layer-icon">◇</span><span>Timeline</span></button>
           <div className="layer-group-label layer-group-projects">SELECTED WORK</div>
           {projects.map((project, index) => <button key={project.slug} className={`layer-item ${selected === project.slug ? "is-selected" : ""}`} onClick={() => focusItem(project.slug)}><span className="layer-number">{String(index + 1).padStart(2, "0")}</span><span>{project.title}</span></button>)}
         </aside>
@@ -303,7 +325,7 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
         <section className="portfolio-canvas-panel" aria-label="Canvas">
           <div ref={viewportRef} className="canvas-viewport" tabIndex={0} aria-label="キャンバス。矢印キーで移動、プラスとマイナスで拡大縮小。タッチ操作では2本指で拡大縮小" onPointerDownCapture={trackTouchStart} onPointerMoveCapture={trackTouchMove} onPointerUpCapture={trackTouchEnd} onPointerCancelCapture={trackTouchEnd} onPointerDown={startPan} onPointerMove={moveGesture} onPointerUp={endGesture} onPointerCancel={endGesture} onKeyDown={onCanvasKeyDown}>
             <div className="canvas-world" style={{ transform: `translate(${camera.x}px, ${camera.y}px) scale(${camera.scale})` }}>
-              <article className={`canvas-card about-card ${selected === "about" ? "card-selected" : ""}`} style={{ left: positions.about?.x ?? aboutPosition.x, top: positions.about?.y ?? aboutPosition.y, width: cardSizes.about?.width, height: cardSizes.about?.height }} onClick={() => setSelected("about")}>
+              <article className={`canvas-card about-card ${selected === "about" ? "card-selected" : ""}`} style={{ left: positions.about?.x ?? aboutPosition.x, top: positions.about?.y ?? aboutPosition.y, width: cardSizes.about?.width, height: cardSizes.about?.height, zIndex: cardOrder.about ?? 0 }} onPointerDown={(event) => { if (event.pointerType === "touch") startCardDrag(event, "about", positions.about ?? aboutPosition); }} onClick={() => selectCard("about")}>
                 <div className="card-eyebrow about-card-handle" onPointerDown={(event) => startCardDrag(event, "about", positions.about ?? aboutPosition)} onPointerMove={moveGesture} onPointerUp={endGesture} onPointerCancel={endGesture}><span className="eyebrow-line" /> ABOUT ME <span className="about-drag-icon">⠿</span></div>
                 <h1>Miyu<br /><em>Sone.</em></h1>
                 <p className="about-role">Software engineer &amp; product thinker</p>
@@ -313,13 +335,22 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
               </article>
               {projects.map((project, index) => {
                 const position = getPosition(project);
-                return <article key={project.slug} className={`canvas-card project-card ${selected === project.slug ? "card-selected" : ""}`} style={{ left: position.x, top: position.y, width: cardSizes[project.slug]?.width, height: cardSizes[project.slug]?.height }} onClick={() => setSelected(project.slug)}>
+                return <article key={project.slug} className={`canvas-card project-card ${selected === project.slug ? "card-selected" : ""}`} style={{ left: position.x, top: position.y, width: cardSizes[project.slug]?.width, height: cardSizes[project.slug]?.height, zIndex: cardOrder[project.slug] ?? 0 }} onPointerDown={(event) => { if (event.pointerType === "touch") startCardDrag(event, project.slug, position); }} onClick={() => selectCard(project.slug)}>
                   <div className="project-card-handle" onPointerDown={(event) => startCardDrag(event, project.slug, position)} onPointerMove={moveGesture} onPointerUp={endGesture} onPointerCancel={endGesture}><span>PROJECT / {String(index + 1).padStart(2, "0")}</span><span aria-hidden="true">⠿</span></div>
                   <div className="project-image"><Image src={project.image} alt={project.imageAlt} width={700} height={420} unoptimized /></div>
                   <div className="project-card-body"><h2>{project.title}</h2><p>{project.description}</p><span className="project-tag">{project.technologies}</span></div>
                   <button className="card-resize-handle" aria-label={`${project.title} のサイズを変更`} onPointerDown={(event) => startCardResize(event, project.slug)} onPointerMove={moveCardResize} onPointerUp={() => { cardResizeRef.current = null; }} onPointerCancel={() => { cardResizeRef.current = null; }} onLostPointerCapture={() => { cardResizeRef.current = null; }} onKeyDown={(event) => resizeCardWithKeyboard(event, project.slug)} onClick={(event) => event.stopPropagation()} />
                 </article>;
               })}
+              <article className={`canvas-card info-card skills-card ${selectedSkills ? "card-selected" : ""}`} style={{ left: getInfoPosition("skills").x, top: getInfoPosition("skills").y, zIndex: cardOrder.skills ?? 0 }} onPointerDown={(event) => { if (event.pointerType === "touch") startCardDrag(event, "skills", getInfoPosition("skills")); }} onClick={() => selectCard("skills")}>
+                <div className="project-card-handle" onPointerDown={(event) => startCardDrag(event, "skills", getInfoPosition("skills"))} onPointerMove={moveGesture} onPointerUp={endGesture} onPointerCancel={endGesture}><span>PROFILE / 01</span><span aria-hidden="true">⠿</span></div>
+                <div className="info-card-body"><h2>Skills</h2>{profile.skills.groups.map((group) => <section key={group.title} className="skills-group"><h3>{group.title}</h3><ul className="skills-tools">{group.technologies.split(" / ").map((technology) => <li key={technology}><SkillIcon name={technology} /><span>{technology}</span></li>)}</ul></section>)}</div>
+              </article>
+              <article className={`canvas-card info-card timeline-card ${selectedTimeline ? "card-selected" : ""}`} style={{ left: getInfoPosition("timeline").x, top: getInfoPosition("timeline").y, width: cardSizes.timeline?.width, height: cardSizes.timeline?.height, zIndex: cardOrder.timeline ?? 0 }} onPointerDown={(event) => { if (event.pointerType === "touch") startCardDrag(event, "timeline", getInfoPosition("timeline")); }} onClick={() => selectCard("timeline")}>
+                <div className="project-card-handle" onPointerDown={(event) => startCardDrag(event, "timeline", getInfoPosition("timeline"))} onPointerMove={moveGesture} onPointerUp={endGesture} onPointerCancel={endGesture}><span>PROFILE / 02</span><span aria-hidden="true">⠿</span></div>
+                <div className="info-card-body"><h2>Timeline</h2><ol className="timeline-list">{profile.timeline.entries.map((entry) => <li key={`${entry.date}-${entry.title}`}><time>{entry.date}</time><strong>{entry.title}</strong></li>)}</ol></div>
+                <button className="card-resize-handle" aria-label="Timeline のサイズを変更" onPointerDown={(event) => startCardResize(event, "timeline")} onPointerMove={moveCardResize} onPointerUp={() => { cardResizeRef.current = null; }} onPointerCancel={() => { cardResizeRef.current = null; }} onLostPointerCapture={() => { cardResizeRef.current = null; }} onKeyDown={(event) => resizeCardWithKeyboard(event, "timeline")} onClick={(event) => event.stopPropagation()} />
+              </article>
             </div>
           </div>
           <div className="canvas-controls" aria-label="キャンバス操作"><button onClick={() => zoomAt(1 / 1.2)} aria-label="縮小">−</button><span>{Math.round(camera.scale * 100)}%</span><button onClick={() => zoomAt(1.2)} aria-label="拡大">＋</button><button className="reset-button" onClick={() => setCamera(getHomeCamera())}>初期位置</button></div>
@@ -328,10 +359,9 @@ export function CanvasPortfolio({ projects }: { projects: CanvasProject[] }) {
         <button className="pane-resizer" aria-label="Inspect の幅を変更" onPointerDown={(event) => startPaneResize(event, "inspect")} onPointerMove={movePaneResize} onPointerUp={() => { resizeRef.current = null; }} onPointerCancel={() => { resizeRef.current = null; }} onLostPointerCapture={() => { resizeRef.current = null; }} onKeyDown={(event) => resizePaneWithKeyboard(event, "inspect")} />
         <aside ref={inspectRef} className="portfolio-inspect" aria-label="Inspect">
           <div className="pane-heading"><span>INSPECT</span></div>
-          <div className="inspect-content"><div className="inspect-type">{selectedProject ? "SELECTED PROJECT" : "PROFILE"}</div><h2>{selectedProject?.title ?? "About Me"}</h2><p className="inspect-description">{selectedProject?.description ?? "神戸電子専門学校で学びながら、Webアプリケーション、モバイル開発、UI/UX、プロダクトマネジメントに取り組んでいます。"}</p>
-            {selectedProject ? <><div className="inspect-divider" /><div className="inspect-field"><span>STACK</span><p>{selectedProject.technologies}</p></div>{selectedProject.body && <div className="inspect-field"><span>NOTE</span><p>{selectedProject.body.split(/\n\s*\n/)[0]}</p></div>}{selectedProject.href && <a className="inspect-cta" href={selectedProject.href} target="_blank" rel="noopener noreferrer">プロジェクトを見る <span>↗</span></a>}</> : <><div className="inspect-divider" /><div className="inspect-field"><span>FOCUS</span><p>Software Engineering<br />Product &amp; Experience</p></div><div className="inspect-links"><a href="https://github.com/s0nmy/" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="https://note.com/snmy_" target="_blank" rel="noopener noreferrer">note ↗</a></div></>}
+          <div className="inspect-content"><div className="inspect-type">{selectedProject ? "SELECTED PROJECT" : "PROFILE"}</div><h2>{inspectTitle}</h2><p className="inspect-description">{inspectDescription}</p>
+            {selectedProject ? <><div className="inspect-divider" /><div className="inspect-field"><span>STACK</span><p>{selectedProject.technologies}</p></div>{selectedProject.href && <a className="inspect-cta" href={selectedProject.href} target="_blank" rel="noopener noreferrer">GitHubを見る <span>↗</span></a>}</> : selectedSkills ? <><div className="inspect-divider" />{profile.skills.groups.map((group) => <div key={group.title} className="inspect-field"><span>{group.title}</span><p>{group.technologies}</p></div>)}</> : selectedTimeline ? <><div className="inspect-divider" />{profile.timeline.entries.map((entry) => <div key={`${entry.date}-${entry.title}`} className="inspect-field"><span>{entry.date}</span><p><strong>{entry.title}</strong><br />{entry.description}</p></div>)}</> : <><div className="inspect-divider" /><div className="inspect-field"><span>FOCUS</span><p>Software Engineering<br />Product &amp; Experience</p></div><div className="inspect-links"><a href="https://github.com/s0nmy/" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="https://note.com/snmy_" target="_blank" rel="noopener noreferrer">note ↗</a></div></>}
           </div>
-          <div className="inspect-footer">Made with curiosity</div>
         </aside>
       </div>
     </main>

@@ -5,6 +5,7 @@ export type CanvasProject = {
   slug: string;
   title: string;
   description: string;
+  overview: string;
   technologies: string;
   image: string;
   imageAlt: string;
@@ -14,7 +15,7 @@ export type CanvasProject = {
   body: string;
 };
 
-const required = ["slug", "title", "description", "technologies", "image", "imageAlt", "x", "y"] as const;
+const required = ["slug", "title", "description", "overview", "technologies", "image", "imageAlt", "x", "y"] as const;
 
 function parseProject(source: string, filename: string): CanvasProject {
   const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/.exec(source);
@@ -41,6 +42,7 @@ function parseProject(source: string, filename: string): CanvasProject {
     slug: fields.slug,
     title: fields.title,
     description: fields.description,
+    overview: fields.overview,
     technologies: fields.technologies,
     image: fields.image,
     imageAlt: fields.imageAlt,
