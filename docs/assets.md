@@ -5,6 +5,8 @@
 - MVPの画像と短い動画は、リポジトリ内で管理する
 - 作品画像は `public/images/{slug}/` に置き、`{slug}` は `content/projects/{slug}.md` と揃える
 - 画像は、可能ならWebPまたはAVIFに変換し、表示サイズに合わせて圧縮する
+  - 作品画像は、幅1,400px程度のWebP（品質80程度）を目安にする
+  - 静的出力では `next/image` の最適化が効かないため、置く前に変換しておく
 - ヒーロー動画は、モバイル回線を考えて短く軽くする
   - 動画がなくても成立するように、背景色または静止画を用意する
 - 他者の写真、動画、SNS投稿は、無断で転載も直リンクもしない
@@ -12,7 +14,7 @@
 
 ## 作品のMarkdownと画像の置き場所
 
-作品の説明は `content/projects/{slug}.md`、画像は `public/images/{slug}/` に置く。例えば `content/projects/chronome.md` と `public/images/chronome/` のように、同じ `{slug}` で対応させる。Markdownの `image` には `/images/chronome/00_ChronoMe.png` のような公開パスを書く。
+作品の説明は `content/projects/{slug}.md`、画像は `public/images/{slug}/` に置く。例えば `content/projects/chronome.md` と `public/images/chronome/` のように、同じ `{slug}` で対応させる。Markdownの `image` には `/images/chronome/00_ChronoMe.webp` のような公開パスを書く。
 
 Markdownはビルド時に読み込む内容の正本で、`public/` の画像は静的出力にコピーされる公開アセットの正本である。現在の読み込み・配信方法では役割が異なるため、同じフォルダにはまとめない。作品ごとの文章や画像が増えて探しにくくなったら、Markdownの読み込み方法と画像の公開方法を合わせて見直す。
 
