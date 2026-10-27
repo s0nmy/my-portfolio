@@ -1,35 +1,47 @@
 # Portfolio
 
-個人ポートフォリオサイトです。Next.js / React / TypeScript の静的出力で構成します。トップページは探索型キャンバスです。作品の正本は `content/projects/*.md` で、画像とfaviconは `public` のファイルを参照します。旧版への復旧には Git 履歴または Cloudflare の過去の deployment を使います。
+Miyu Soneの個人ポートフォリオサイト
+
+トップページは、作品やプロフィールのカードを自由に動かして探索できるキャンバス
+
+Next.js / React / TypeScriptの静的出力を、Cloudflare Workerから配信する
 
 ## ディレクトリ
 
 ```text
-app/                    Next.js App Router（canvas/ 画面とジェスチャー、lib/ Markdownローダー、styles/）
-content/projects/        作品のMarkdownとFrontmatter
-public/                 公開アセットの正本
-docs/                   設計、ADR、運用記録
-docs/workflows/         Codex / Claude Code 共通ワークフローの正本
+app/                 Next.js App Router
+  canvas/            キャンバスの画面とジェスチャー
+  lib/               Markdownの読み込み
+  styles/            CSS
+content/             作品・スキル・年表のMarkdown（内容の正本）
+public/              画像とfavicon（公開アセットの正本）
+docs/                設計、ADR、運用手順
+docs/workflows/      Codex / Claude Code 共通ワークフローの正本
 ```
 
-## ローカル確認
+## ローカルで確認する
 
 ```sh
-npm ci
+npm ci            # 依存パッケージを入れる
+npm run dev       # 開発サーバーを起動する
 npm run lint
 npm run typecheck
-npm run build
-npm run dev
+npm run build     # 公開用のファイルを out/ に生成する
 ```
 
-`npm run build` は `out` を生成します。作品詳細ページは次のリリースで追加します。
+## 公開する
 
-## 公開
+`main` ブランチへのマージで、Cloudflare Workers Buildsが本番へ自動デプロイする
 
-Cloudflare Workers BuildsでGitHubの`main`ブランチを本番デプロイします。Workerの静的アセットは `wrangler.jsonc` で `out` を指定しています。Cloudflare管理画面のBuild commandを `npm run build`、Deploy commandを `npx wrangler deploy` に設定し、Preview確認後に `develop → main` で公開します。Preview commandの項目はWorker Previewsへの切り替え状態によって表示が異なるため、現行の設定を確認します。
+通常は `develop` でPreviewを確認してから、`develop` → `main` の順に公開する
+
+- Workerが配信するのは、`wrangler.jsonc` で指定した `out/`
+- Cloudflare管理画面には、Build commandに `npm run build`、Deploy commandに `npx wrangler deploy` を設定する
+- Preview commandの表示は、Worker Previewsへの切り替え状況で変わる
+  - 現在の設定を確認する
 
 ## 設計ドキュメント
 
-- [アーキテクチャ方針](docs/architecture.md)
-- [キャンバス型ポートフォリオの設計](docs/infinite-canvas.md)
-- [ADR一覧](docs/adr/README.md)
+- [アーキテクチャ方針](docs/architecture.md)：構成、公開手順、運用
+- [キャンバス型ポートフォリオの設計](docs/infinite-canvas.md)：操作と実装
+- [ADR一覧](docs/adr/README.md)：判断の記録
