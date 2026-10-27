@@ -1,7 +1,7 @@
-import { CanvasPortfolio } from "./components/CanvasPortfolio";
-import { getCanvasProjects } from "./content/canvas-projects";
-import { getCanvasProfile } from "./content/canvas-profile";
+import { CanvasPortfolio } from "./canvas/CanvasPortfolio";
+import { getProfile } from "./lib/profile";
+import { getProjects } from "./lib/projects";
 
 export default function Home() {
-  return <CanvasPortfolio projects={getCanvasProjects()} profile={getCanvasProfile()} />;
+  return <CanvasPortfolio projects={getProjects()} profile={getProfile()} />;
 }
