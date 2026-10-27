@@ -7,17 +7,16 @@ MVPでは作品紹介・プロフィール・外部SNSへの導線を提供す�
 
 ## 新しいトップページの方針（2026-10-23）
 
-トップページはLayers / Canvas / Inspectの3ペインを持つ探索型ポートフォリオへ段階的に改修する。操作とコンテンツの詳細は[Infinite canvas portfolio](infinite-canvas.md)を参照。既存ページは移行中 `/classic` に保持する。作品情報の新しい正本は `content/projects/*.md` とし、ビルド時に静的HTMLへ取り込む。
+トップページはLayers / Canvas / Inspectの3ペインを持つ探索型ポートフォリオへ段階的に改修する。操作とコンテンツの詳細は[Infinite canvas portfolio](infinite-canvas.md)を参照。作品情報の正本は `content/projects/*.md` とし、ビルド時に静的HTMLへ取り込む。
 
 ## 現在の構成（2026-10-23）
 
-サイトはNext.js App Router / React / TypeScriptで構成し、静的出力をCloudflare Workerから配信する。移行前のHTML / CSS / JavaScriptは比較用に`legacy/static-site`へ保管し、画像とfaviconは`public`を正本として共有する。旧版への復旧にはGit履歴またはCloudflareの過去のdeploymentを使う。
+サイトはNext.js App Router / React / TypeScriptで構成し、静的出力をCloudflare Workerから配信する。画像とfaviconは`public`を正本とする。旧版への復旧にはGit履歴またはCloudflareの過去のdeploymentを使う。
 
-DBや管理画面はまだ導入しない。キャンバス型トップページの作品情報は`content/projects/*.md`に置く。従来ページの`app/content/projects.ts`は移行期間中に保持する。ブラウザからの編集、画像アップロード、即時公開などの需要が明確になった時点でDB導入を判断する。
+DBや管理画面はまだ導入しない。キャンバス型トップページの作品情報は`content/projects/*.md`に置く。ブラウザからの編集、画像アップロード、即時公開などの需要が明確になった時点でDB導入を判断する。
 
 詳しい判断は次の文書に記録する。
 
-- [移行計画](migration-plan.md)
 - [ADR 0001: Next.js / Reactへ段階的に移行する](adr/0001-nextjs-react-migration.md)
 - [ADR 0002: コンテンツ管理とDB導入時期を分ける](adr/0002-content-management-and-database.md)
 - [ADR 0003: Cloudflareのドメイン・DNSとアプリ実行基盤を分離する](adr/0003-cloudflare-domain-and-runtime.md)
@@ -27,9 +26,9 @@ DBや管理画面はまだ導入しない。キャンバス型トップページ
 
 | 領域 | 現行構成 | 次の候補 |
 | --- | --- | --- |
-| フロントエンド | Next.js / React / TypeScript、静的出力。トップはキャンバス型、従来画面は`/classic` | 詳細ページなどを段階的に追加 |
-| コンテンツ | キャンバスの作品は`content/projects/*.md`、従来画面は`app/content/projects.ts` | 詳細本文の拡充と従来データの整理 |
-| 画像・動画 | `public/`で管理。旧サイトも同じ画像を参照 | 増加時にCloudflare R2などを検討 |
+| フロントエンド | Next.js / React / TypeScript、静的出力。トップはキャンバス型 | 詳細ページなどを段階的に追加 |
+| コンテンツ | 作品は`content/projects/*.md` | 詳細本文の拡充 |
+| 画像・動画 | `public/`で管理 | 増加時にCloudflare R2などを検討 |
 | ホスティング | Cloudflare Workers BuildsからWorkerへ静的出力を配信 | SSRなどが必要になった時点で方式を再評価 |
 | ドメイン・DNS | Cloudflare Registrar / DNS | 継続 |
 | 管理画面・認証 | なし | 要件が明確になった時点で検討 |

@@ -33,7 +33,7 @@ function baseCard(filename: string, fields: Record<string, string>): BaseInfoCar
   return { title: fields.title, summary: fields.summary, x, y };
 }
 
-export function getCanvasProfile(): { skills: SkillsCard; timeline: TimelineCard } {
+export function getProfile(): { skills: SkillsCard; timeline: TimelineCard } {
   const skillsSource = readCard("skills.md");
   const timelineSource = readCard("timeline.md");
   return {

@@ -32,7 +32,6 @@ flowchart LR
 - SkillsとTimelineの正本は `content/skills.md` と `content/timeline.md`。Frontmatterの `title`, `summary`, `x`, `y` と、本文の `##` 見出しで内容を管理する。Timelineは従来ページのActivity、Skillsは従来ページのSkillsを元にした。
 - 本文は将来の詳しい紹介用に保存し、Inspectには表示しない。Frontmatterは単純な `key: value` の行形式で、複雑なYAML構文は使わない。
 - リポジトリ内のMarkdownをビルド時に読む。DB・管理画面・サーバーAPIは追加しない。静的出力と既存のCloudflare配信方式を維持する。
-- 旧 `app/content/projects.ts` は `/classic` の表示用として残す。旧ページの削除は別の判断とする。
 
 ## 段階
 

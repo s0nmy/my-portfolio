@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
-export type CanvasProject = {
+export type Project = {
   slug: string;
   title: string;
   description: string;
@@ -17,7 +17,7 @@ export type CanvasProject = {
 
 const required = ["slug", "title", "description", "overview", "technologies", "image", "imageAlt", "x", "y"] as const;
 
-function parseProject(source: string, filename: string): CanvasProject {
+function parseProject(source: string, filename: string): Project {
   const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/.exec(source);
   if (!match) throw new Error(`${filename}: Frontmatter is missing`);
 
@@ -53,7 +53,7 @@ function parseProject(source: string, filename: string): CanvasProject {
   };
 }
 
-export function getCanvasProjects(): CanvasProject[] {
+export function getProjects(): Project[] {
   const directory = join(process.cwd(), "content", "projects");
   return readdirSync(directory)
     .filter((filename) => filename.endsWith(".md"))
