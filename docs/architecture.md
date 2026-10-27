@@ -2,6 +2,34 @@
 
 個人ポートフォリオを、軽量で更新しやすい静的サイトとして、独自ドメインで公開する。Next.jsの静的出力を、Cloudflare Workerから配信する。このページの読み手は、サイトの構成や公開手順を確認する開発者とAIエージェントを想定している。最初のリリース（MVP）で提供するのは、作品紹介、プロフィール、外部SNSへの導線である。
 
+## 全体の構成
+
+サイトは、ビルド時に静的なファイルへ変換し、Cloudflare Workerがそのファイルだけを配信する。訪問者のリクエストを処理するサーバー側のコードはない。
+
+```mermaid
+flowchart LR
+  REPO["GitHub<br/>コード・Markdown・画像"]
+  BUILD["Cloudflare Workers Builds<br/>静的ファイルを生成"]
+  WORKER["Cloudflare Worker<br/>静的ファイルを配信"]
+  VISITOR(["訪問者"])
+
+  REPO -->|main へのマージ| BUILD
+  BUILD -->|デプロイ| WORKER
+  WORKER -->|独自ドメイン・HTTPS| VISITOR
+```
+
+ビルドでは、Next.jsが `app/` のコードと `content/` のMarkdownを読み、静的なHTMLを `out/` に出力する。`public/` のファイルは、そのまま `out/` に含まれる。
+
+```mermaid
+flowchart LR
+  APP["app/"] --> NEXT["next build<br/>output: export"]
+  CONTENT["content/*.md"] -->|ビルド時に読み込み| NEXT
+  NEXT --> OUT["out/<br/>静的なHTML・CSS・JS"]
+  PUBLIC["public/"] -->|そのままコピー| OUT
+```
+
+作業ブランチから `main` までの流れは、[公開手順](deployment.md)を参照する。
+
 ## 現在の構成
 
 | 領域 | 現行の構成 | 次の候補 |
